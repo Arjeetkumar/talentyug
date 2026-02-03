@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Guest List – TalentYug</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <style>
+        .material-icons-round {
+            vertical-align: middle;
+        }
+
+        /* Table Styles */
+        .guest-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        .guest-table th {
+            text-align: left;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .guest-table td {
+            padding: 16px;
+            font-size: 14px;
+            color: var(--text);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .guest-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .status-pill {
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-pill.confirmed {
+            background: #def7ec;
+            color: #03543f;
+        }
+
+        .status-pill.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            background: #e2e8f0;
+            border-radius: 50%;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 12px;
+        }
+    </style>
+</head>
+
+<body class="dashboard-page">
+
+    <!-- DASHBOARD NAVBAR -->
+    <div class="dashboard-navbar">
+        <div class="nav-left">
+            <div class="nav-logo">
+                <img src="logo.png" alt="TalentYug Logo">
+                TalentYug
+            </div>
+            <div class="nav-links">
+                <a href="Event.html">My Events</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="pre-registration.html">Pre-Registration</a>
+                <a href="qr.html">QR Codes</a>
+                <a href="scanner.html">Scanner</a>
+                <a href="guestlist.html" class="active">Guest Lists</a>
+            </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="dashboard-container">
+
+        <div class="page-header">
+            <div>
+                <h1>Guest List</h1>
+                <div class="subtitle">Manage attendees for <strong>Annual Symposium</strong></div>
+            </div>
+            <button class="btn-save" onclick="openModal()" style="width:auto; padding:12px 24px;">
+                <span class="material-icons-round" style="margin-right:8px;">add</span> Add Guest
+            </button>
+        </div>
+
+        <div class="d-card" style="padding:0; overflow:hidden;">
+            <!-- Simple filter bar -->
+            <div style="padding:16px; border-bottom:1px solid var(--border); display:flex; gap:12px;">
+                <input type="text" placeholder="Search guests..."
+                    style="padding:10px 16px; border:1px solid var(--border); border-radius:8px; outline:none; font-size:14px; width:280px;">
+                <select
+                    style="padding:10px 16px; border:1px solid var(--border); border-radius:8px; outline:none; font-size:14px;">
+                    <option>All Status</option>
+                    <option>Confirmed</option>
+                    <option>Pending</option>
+                </select>
+                <div style="flex:1;"></div>
+                <button onclick="alert('Filters applied (demo)')"
+                    style="background:white; border:1px solid var(--border); padding:8px 12px; border-radius:8px; cursor:pointer;">
+                    <span class="material-icons-round" style="color:var(--text);">filter_list</span>
+                    <button onclick="exportCSV()"
+                        style="background:white; border:1px solid var(--border); padding:8px 12px; margin-left:8px; border-radius:8px; cursor:pointer; display:flex; align-items:center; gap:6px;">
+                        <span class="material-icons-round" style="color:var(--success); font-size:18px;">download</span>
+                        <span style="font-size:13px; font-weight:600; color:var(--text);">Export</span>
+                    </button>
+                    <button onclick="window.print()"
+                        style="background:white; border:1px solid var(--border); padding:8px 12px; margin-left:8px; border-radius:8px; cursor:pointer; display:flex; align-items:center; gap:6px;">
+                        <span class="material-icons-round" style="color:var(--primary); font-size:18px;">print</span>
+                        <span style="font-size:13px; font-weight:600; color:var(--text);">Print</span>
+                    </button>
+            </div>
+
+            <!-- PRINT BADGES CONTAINER (Hidden normally, shown in print) -->
+            <div id="printBadges" class="print-badges-container" style="display:none;"></div>
+
+            <table class="guest-table">
+                <thead>
+                    <tr>
+                        <th width="40%">Guest</th>
+                        <th width="30%">Email / Ticket</th>
+                        <th width="20%">Status</th>
+                        <th width="10%">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="guestTableBody">
+                    <!-- Example Rows -->
+                    <tr>
+                        <td>
+                            <div class="avatar"></div>
+                            <strong>Arjun Sharma</strong>
+                        </td>
+                        <td>arjun@example.com<br><span style="color:var(--muted); font-size:12px;">#TRX-8821</span></td>
+                        <td><span class="status-pill confirmed">Confirmed</span></td>
+                        <td>
+                            <button class="btn-icon" style="background:none; border:none; cursor:pointer;"
+                                onclick="deleteGuest(this)">
+                                <span class="material-icons-round"
+                                    style="color:var(--danger); opacity:0.7;">delete</span>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="avatar"></div>
+                            <strong>Priya Singh</strong>
+                        </td>
+                        <td>priya@example.com<br><span style="color:var(--muted); font-size:12px;">#TRX-8822</span></td>
+                        <td><span class="status-pill pending">Pending</span></td>
+                        <td>
+                            <button class="btn-icon" style="background:none; border:none; cursor:pointer;"
+                                onclick="deleteGuest(this)">
+                                <span class="material-icons-round"
+                                    style="color:var(--danger); opacity:0.7;">delete</span>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom:20px; color:var(--text);">Add New Guest</h3>
+
+            <input type="text" id="guestName" placeholder="Full Name">
+            <input type="email" id="guestEmail" placeholder="Email Address">
+            <select id="guestStatus"
+                style="width:100%; padding:12px; margin-bottom:12px; border:1px solid var(--border); border-radius:8px; outline:none;">
+                <option value="confirmed">Confirmed</option>
+                <option value="pending">Pending</option>
+            </select>
+
+            <button class="btn-save" onclick="addGuest()">Add to List</button>
+            <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+        </div>
+    </div>
+
+    <script src="storage.js"></script>
+    <script>
+        const modal = document.getElementById("modal");
+
+        function openModal() {
+            document.getElementById("guestName").value = "";
+            document.getElementById("guestEmail").value = "";
+            modal.style.display = "flex";
+        }
+
+        function closeModal() {
+            modal.style.display = "none";
+        }
+
+        function loadGuests() {
+            const guests = Storage.getGuests();
+            const tbody = document.getElementById("guestTableBody");
+            tbody.innerHTML = "";
+
+            guests.forEach(g => {
+                const tr = document.createElement("tr");
+                const statusClass = g.status === 'confirmed' ? 'confirmed' : 'pending';
+                const statusLabel = g.status === 'confirmed' ? 'Confirmed' : 'Pending';
+
+                tr.innerHTML = `
+                    <td>
+                        <div class="avatar"></div>
+                        <strong>${APP_UTILS.escape(g.name)}</strong>
+                    </td>
+                    <td>${APP_UTILS.escape(g.email)}<br><span style="color:var(--muted); font-size:12px;">#${g.id.substr(-6)}</span></td>
+                    <td><span class="status-pill ${statusClass}">${statusLabel}</span></td>
+                    <td>
+                        <button class="btn-icon" style="background:none; border:none; cursor:pointer;" onclick="deleteGuest('${g.id}')">
+                            <span class="material-icons-round" style="color:var(--danger); opacity:0.7;">delete</span>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function addGuest() {
+            const name = document.getElementById("guestName").value;
+            const email = document.getElementById("guestEmail").value;
+            const status = document.getElementById("guestStatus").value;
+
+            if (!name || !email) { alert("Please fill details"); return; }
+
+            Storage.saveGuest({
+                name: name,
+                email: email,
+                status: status
+            });
+
+            loadGuests();
+            closeModal();
+        }
+
+        function deleteGuest(id) {
+            if (confirm("Remove this guest?")) {
+                Storage.deleteGuest(id);
+                loadGuests();
+            }
+        }
+
+        function exportCSV() {
+            const guests = Storage.getGuests();
+            if (guests.length === 0) { alert("No guests to export"); return; }
+
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "ID,Name,Email,Status\n"; // Header
+
+            guests.forEach(g => {
+                const row = `${g.id},"${g.name}","${g.email}",${g.status}`;
+                csvContent += row + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "guest_list.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Hook into print to generate badges
+        window.onbeforeprint = function () {
+            const guests = Storage.getGuests();
+            const container = document.getElementById("printBadges");
+            container.style.display = "grid";
+            container.innerHTML = "";
+
+            guests.forEach(g => {
+                const badge = document.createElement("div");
+                badge.className = "print-badge";
+                badge.innerHTML = `
+                    <div style="font-size:30px; font-weight:700; margin-bottom:10px;">TalentYug</div>
+                    <div style="font-size:16px; text-transform:uppercase; letter-spacing:2px; margin-bottom:30px;">Event Pass</div>
+                    <div style="font-size:24px; font-weight:600; margin-bottom:8px;">${g.name}</div>
+                    <div style="font-size:14px; color:#555;">${g.status.toUpperCase()}</div>
+                    <div style="margin-top:40px; border-top:1px dashed #000; padding-top:10px; font-size:12px;">
+                        ID: ${g.id}
+                    </div>
+                `;
+                container.appendChild(badge);
+            });
+        };
+
+        window.onafterprint = function () {
+            document.getElementById("printBadges").style.display = "none";
+        };
+
+        // Simple HTML Escape helper
+        const APP_UTILS = {
+            escape: (str) => {
+                const p = document.createElement('p');
+                p.textContent = str;
+                return p.innerHTML;
+            }
+        };
+
+        function logout() {
+            window.location.href = "login.html";
+        }
+
+        function toggleTheme() {
+            const current = Storage.getTheme();
+            const next = current === 'dark' ? 'light' : 'dark';
+            Storage.setTheme(next);
+            updateThemeIcon(next);
+        }
+
+        function updateThemeIcon(theme) {
+            const icon = document.querySelector('.theme-icon');
+            if (icon) icon.innerText = theme === 'dark' ? 'light_mode' : 'dark_mode';
+        }
+
+        window.onload = function () {
+            loadGuests();
+            updateThemeIcon(Storage.getTheme());
+        };
+    </script>
+</body>
+
+</html>

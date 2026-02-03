@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Dashboard – TalentYug</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #005070;
+            --accent: #49c6dd;
+            --bg: #f7f8f9;
+            --card: #ffffff;
+            --text: #0f172a;
+            --muted: #6b7280;
+            --border: #e3e3e3;
+            --success: #1f8f5f;
+            --danger: #b42318;
+            --radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        /* ================= NAVBAR ================= */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            width: 32px;
+            height: auto;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            margin-right: 20px;
+            font-weight: 500;
+            color: var(--muted);
+            position: relative;
+        }
+
+        .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .nav-links a.active::after {
+            content: "";
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        /* Hamburger */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .hamburger span {
+            width: 24px;
+            height: 3px;
+            background: var(--text);
+            border-radius: 2px;
+        }
+
+        .logout {
+            background: rgba(180, 35, 24, 0.12);
+            color: var(--danger);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* ================= MOBILE MENU ================= */
+        .mobile-menu {
+            display: none;
+            flex-direction: column;
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 20px;
+            animation: slideDown 0.25s ease;
+        }
+
+        .mobile-menu a {
+            padding: 10px 0;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .mobile-menu a.active {
+            color: var(--primary);
+        }
+
+        /* ================= LAYOUT ================= */
+        .container {
+            padding: 28px 20px 60px;
+            max-width: 1400px;
+            margin: auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        .subtitle {
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .status span {
+            width: 10px;
+            height: 10px;
+            background: var(--success);
+            border-radius: 50%;
+        }
+
+        /* ================= CARDS ================= */
+        .kpis {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 22px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.04);
+        }
+
+        .kpi-title {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .kpi-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        canvas {
+            max-height: 300px;
+            margin-top: 12px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 28px;
+        }
+
+        .empty {
+            text-align: center;
+            color: var(--muted);
+            padding: 36px 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        /* ================= ANIMATIONS ================= */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ================= RESPONSIVE ================= */
+        @media (max-width: 1024px) {
+            .kpis {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div class="nav-left">
+            <div class="logo">
+                <img src="logo.png" alt="TalentYug Logo">
+                TalentYug
+            </div>
+            <div class="nav-links">
+                <a href="Event.html">My Events</a>
+                <a class="active" href="dashboard.html">Dashboard</a>
+                <a href="pre-registration.html">Pre-Registration</a>
+                <a href="qr.html">QR Codes</a>
+                <a href="scanner.html">Scanner</a>
+                <a href="guestlist.html">Guest Lists</a>
+            </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+            <button class="logout" onclick="logout()">Logout</button>
+            <div class="hamburger" onclick="toggleMenu()">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </div>
+    <!-- MOBILE MENU -->
+    <div id="mobileMenu" class="mobile-menu">
+        <a href="Event.html" onclick="closeMenu()">My Events</a>
+        <a class="active" href="dashboard.html" onclick="closeMenu()">Dashboard</a>
+        <a href="pre-registration.html" onclick="closeMenu()">Pre-Registration</a>
+        <a href="qr.html" onclick="closeMenu()">QR Codes</a>
+        <a href="scanner.html" onclick="closeMenu()">Scanner</a>
+        <a href="guestlist.html" onclick="closeMenu()">Guest Lists</a>
+    </div>
+    <!-- CONTENT -->
+    <div class="container">
+        <div class="page-header">
+            <div>
+                <h1>Dashboard</h1>
+                <div class="subtitle">Real-time placement insights for <strong>TalentYug</strong></div>
+            </div>
+            <div class="status">
+                <span></span> Live Monitoring
+            </div>
+        </div>
+        <div class="kpis">
+            <div class="card">
+                <div class="kpi-title">Total Colleges</div>
+                <div class="kpi-value">48</div>
+            </div>
+            <div class="card">
+                <div class="kpi-title">Students Enrolled</div>
+                <div class="kpi-value">6,240</div>
+            </div>
+            <div class="card">
+                <div class="kpi-title">Active Opportunities</div>
+                <div class="kpi-value">132</div>
+            </div>
+            <div class="card">
+                <div class="kpi-title">Students Placed</div>
+                <div class="kpi-value">1,084</div>
+            </div>
+        </div>
+        <div class="card">
+            <h3>Placement Activity (Last 30 Days)</h3>
+            <canvas id="placementChart"></canvas>
+        </div>
+        <div class="grid-2">
+            <div class="card">
+                <h3>Recently Onboarded Colleges</h3>
+                <div class="empty">No data yet.</div>
+            </div>
+            <div class="card">
+                <h3>Latest Placements</h3>
+                <div class="empty">No data yet.</div>
+            </div>
+        </div>
+    </div>
+    <footer>Powered by <strong>TalentYug</strong></footer>
+    <script src="storage.js"></script>
+    <script>
+        const menu = document.getElementById("mobileMenu");
+        const hamburger = document.getElementsByClassName("hamburger")[0];
+
+        function toggleMenu() {
+            const open = menu.style.display === "flex";
+            menu.style.display = open ? "none" : "flex";
+            hamburger.classList.toggle("active", !open);
+        }
+
+        function closeMenu() {
+            menu.style.display = "none";
+            hamburger.classList.remove("active");
+        }
+
+        function logout() {
+            localStorage.removeItem('ty_user'); // Clear specific if defined
+            // sessionStorage.clear();
+            window.location.href = "login.html";
+        }
+
+        function toggleTheme() {
+            const current = Storage.getTheme();
+            const next = current === 'dark' ? 'light' : 'dark';
+            Storage.setTheme(next);
+            updateThemeIcon(next);
+        }
+
+        function updateThemeIcon(theme) {
+            const icon = document.querySelector('.theme-icon');
+            if (icon) icon.innerText = theme === 'dark' ? 'light_mode' : 'dark_mode';
+        }
+
+        // Init Theme UI
+        window.addEventListener('load', () => {
+            updateThemeIcon(Storage.getTheme());
+        });
+
+        new Chart(document.getElementById('placementChart'), {
+            type: 'line',
+            data: {
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                datasets: [{
+                    data: [120, 260, 410, 620],
+                    borderColor: '#005070',
+                    backgroundColor: 'rgba(73, 198, 221, 0.25)',
+                    fill: true,
+                    tension: 0.35
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(0,0,0,0.05)' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

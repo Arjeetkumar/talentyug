@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Dashboard – TalentYug</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <style>
+        /* Page specific overrides if needed */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .event-menu-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            color: var(--muted);
+        }
+
+        .event-dropdown {
+            display: none;
+            position: absolute;
+            top: 40px;
+            right: 20px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            overflow: hidden;
+            min-width: 150px;
+        }
+
+        .event-dropdown div {
+            padding: 10px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            color: var(--text);
+            transition: background 0.1s;
+        }
+
+        .event-dropdown div:hover {
+            background: #f1f5f9;
+            color: var(--primary);
+        }
+    </style>
+</head>
+
+<body class="dashboard-page">
+
+    <!-- UNIFIED NAVBAR -->
+    <div class="dashboard-navbar">
+        <div class="nav-left">
+            <div class="nav-logo">
+                <img src="logo.png" alt="TalentYug Logo">
+                TalentYug
+            </div>
+            <div class="nav-links">
+                <a href="Event.html" class="active">My Events</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="pre-registration.html">Pre-Registration</a>
+                <a href="qr.html">QR Codes</a>
+                <a href="scanner.html">Scanner</a>
+                <a href="guestlist.html">Guest Lists</a>
+            </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="dashboard-container">
+
+        <div class="page-header">
+            <div>
+                <h1>Your Events</h1>
+                <div class="subtitle">Manage existing events or launch a new one.</div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid" id="dashboard">
+            <!-- Create Card -->
+            <div class="d-card create-card" onclick="openModal()">
+                <div
+                    style="width:56px; height:56px; background:#f1f5f9; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-bottom:16px;">
+                    <span class="material-icons-round" style="color:var(--primary); font-size:32px;">add</span>
+                </div>
+                <strong style="color:var(--primary); font-size:18px;">Create New Event</strong>
+                <small style="color:var(--muted); margin-top:4px;">Start your next success story</small>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom:20px; color:var(--text);">Create / Edit Event</h3>
+
+            <label style="font-size:12px; font-weight:600; color:var(--muted); display:block; margin-bottom:4px;">EVENT
+                NAME</label>
+            <input type="text" id="eventName" placeholder="e.g. Annual Tech Symposium">
+
+            <label style="font-size:12px; font-weight:600; color:var(--muted); display:block; margin-bottom:4px;">START
+                DATE</label>
+            <input type="date" id="startDate">
+
+            <label style="font-size:12px; font-weight:600; color:var(--muted); display:block; margin-bottom:4px;">END
+                DATE</label>
+            <input type="date" id="endDate">
+
+            <button class="btn-save" onclick="saveEvent()">Save Event</button>
+            <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+        </div>
+    </div>
+
+    <script src="storage.js"></script>
+    <script>
+        const dashboard = document.getElementById("dashboard");
+        const modal = document.getElementById("modal");
+        const eventName = document.getElementById("eventName");
+        const startDate = document.getElementById("startDate");
+        const endDate = document.getElementById("endDate");
+        let editCard = null;
+        let currentEventId = null;
+
+        // Load Events on Init
+        function loadEvents() {
+            const events = Storage.getEvents();
+            // Clear existing except the "Create Card" which is usually static or re-rendered
+            // For simplicity, we re-render everything
+            dashboard.innerHTML = `
+                <div class="d-card create-card" onclick="openModal()">
+                    <div style="width:56px; height:56px; background:#f1f5f9; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-bottom:16px;">
+                        <span class="material-icons-round" style="color:var(--primary); font-size:32px;">add</span>
+                    </div>
+                    <strong style="color:var(--primary); font-size:18px;">Create New Event</strong>
+                    <small style="color:var(--muted); margin-top:4px;">Start your next success story</small>
+                </div>
+            `;
+
+            events.forEach(renderEventCard);
+        }
+
+        function renderEventCard(evt) {
+            const dateText = `${new Date(evt.start).toDateString()} → ${new Date(evt.end).toDateString()}`;
+            const card = document.createElement("div");
+            card.className = "d-card";
+            card.dataset.id = evt.id; // Store ID
+            card.dataset.start = evt.start;
+            card.dataset.end = evt.end;
+            card.innerHTML = `
+                <span class="material-icons-round event-menu-btn" onclick="toggleMenu(this)">more_vert</span>
+                <div class="event-dropdown">
+                    <div onclick="editEvent(this)">Edit Event</div>
+                    <div onclick="checkIn('${evt.id}')">Check-In Form</div>
+                    <div onclick="deleteEvent(this)" style="color:var(--danger)">Delete Event</div>
+                </div>
+                
+                <div style="font-size:13px; color:var(--primary); font-weight:600; margin-bottom:8px;" class="event-date">${dateText}</div>
+                <div class="event-title" style="font-size:18px; font-weight:700; margin-bottom:12px; color:var(--text);">${evt.name}</div>
+                
+                <div style="display:flex; gap:12px; margin-top:20px;">
+                    <button class="btn-save" style="flex:1; padding:10px; font-size:14px;" onclick="manageEvent('${evt.id}')">Manage</button>
+                </div>
+            `;
+            dashboard.appendChild(card);
+        }
+
+        function openModal(card = null) {
+            editCard = card;
+            if (card) {
+                currentEventId = card.dataset.id;
+                eventName.value = card.querySelector(".event-title").innerText;
+                startDate.value = card.dataset.start;
+                endDate.value = card.dataset.end;
+            } else {
+                currentEventId = null;
+                eventName.value = "";
+                startDate.value = "";
+                endDate.value = "";
+            }
+            modal.style.display = "flex";
+        }
+
+        function closeModal() {
+            modal.style.display = "none";
+            editCard = null;
+            currentEventId = null;
+        }
+
+        function saveEvent() {
+            const name = eventName.value.trim();
+            const start = startDate.value;
+            const end = endDate.value;
+
+            if (!name || !start || !end) { alert("Fill all fields"); return; }
+            if (new Date(end) < new Date(start)) { alert("Ending date cannot be before starting date"); return; }
+
+            // Save to Storage
+            Storage.saveEvent({
+                id: currentEventId, // if null, new ID is generated
+                name: name,
+                start: start,
+                end: end
+            });
+
+            // Reload UI
+            loadEvents();
+
+            // If new event (no current ID was passed initially), redirect
+            if (!currentEventId) {
+                if (confirm("Event Created! Go to Dashboard?")) {
+                    window.location.href = "dashboard.html";
+                }
+            }
+
+            closeModal();
+        }
+
+        function toggleMenu(el) {
+            document.querySelectorAll(".event-dropdown").forEach(d => {
+                if (d !== el.nextElementSibling) d.style.display = "none";
+            });
+            const db = el.nextElementSibling;
+            db.style.display = db.style.display === "block" ? "none" : "block";
+            event.stopPropagation();
+        }
+
+        function editEvent(el) {
+            openModal(el.closest(".d-card"));
+        }
+
+        function deleteEvent(el) {
+            if (confirm("Delete this event?")) {
+                const card = el.closest(".d-card");
+                Storage.deleteEvent(card.dataset.id); // Delete from storage
+                card.remove();
+            }
+        }
+
+        function checkIn(id) {
+            alert("Opening Check-In for Event ID: " + id);
+        }
+
+        function manageEvent(id) {
+            window.location.href = "dashboard.html";
+        }
+
+        function logout() {
+            window.location.href = "login.html";
+        }
+
+        function toggleTheme() {
+            const current = Storage.getTheme();
+            const next = current === 'dark' ? 'light' : 'dark';
+            Storage.setTheme(next);
+            updateThemeIcon(next);
+        }
+
+        function updateThemeIcon(theme) {
+            const icon = document.querySelector('.theme-icon');
+            if (icon) icon.innerText = theme === 'dark' ? 'light_mode' : 'dark_mode';
+        }
+
+        // Init
+        window.onload = function () {
+            loadEvents();
+            updateThemeIcon(Storage.getTheme());
+        };
+    </script>
+</body>
+
+</html>

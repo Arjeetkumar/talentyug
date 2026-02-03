@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QR Generator Dashboard – TalentYug</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <!-- QR Code Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        .material-icons-round {
+            vertical-align: middle;
+        }
+
+        /* Grid override for 3 items if using .kpis class which defaults to 4 */
+        .kpis.three-col {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        @media (max-width: 1024px) {
+            .kpis.three-col {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .kpis.three-col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Generator Layout Specifics using Grid */
+        .generator-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .generator-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body class="dashboard-page">
+
+    <!-- DASHBOARD NAVBAR -->
+    <div class="dashboard-navbar">
+        <div class="nav-left">
+            <div class="nav-logo">
+                <img src="logo.png" alt="TalentYug Logo">
+                TalentYug
+            </div>
+            <div class="nav-links">
+                <a href="Event.html">My Events</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="pre-registration.html">Pre-Registration</a>
+                <a href="qr.html" class="active">QR Codes</a>
+                <a href="scanner.html">Scanner</a>
+                <a href="guestlist.html">Guest Lists</a>
+            </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <!-- CONTENT CONTAINER -->
+    <div class="dashboard-container">
+
+        <div class="page-header">
+            <div>
+                <h1>Generated Codes (10)</h1>
+                <div class="subtitle">Managing your batch.</div>
+            </div>
+            <!-- User Profile Icon -->
+            <div style="display:flex; align-items:center; gap:12px;">
+                <span class="material-icons-round" onclick="alert('No new notifications')"
+                    style="color:var(--muted); font-size:24px; cursor:pointer;">notifications</span>
+                <div onclick="alert('Profile Settings')"
+                    style="width:32px; height:32px; background:#e2e8f0; border-radius:50%; cursor:pointer;"></div>
+            </div>
+        </div>
+
+        <!-- STATS (KPIs) -->
+        <div class="kpis three-col">
+            <div class="d-card">
+                <div class="kpi-title">Total Codes</div>
+                <div class="kpi-value">10</div>
+            </div>
+            <div class="d-card">
+                <div class="kpi-title">Scanned / Used</div>
+                <div class="kpi-value" style="color:#10b981;">0</div>
+            </div>
+            <div class="d-card">
+                <div class="kpi-title">Newly Created</div>
+                <div class="kpi-value" style="color:var(--primary);">10</div>
+            </div>
+        </div>
+
+        <!-- GENERATOR SECTION -->
+        <div class="generator-grid">
+
+            <!-- LEFT CONFIG PANEL -->
+            <div class="d-card">
+
+                <!-- Generation Mode -->
+                <div style="margin-bottom: 24px;">
+                    <label
+                        style="font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; display:block; margin-bottom:12px;">GENERATION
+                        MODE</label>
+                    <div style="display:flex; background:#f1f5f9; padding:4px; border-radius:12px;">
+                        <div class="mode-btn active" onclick="setMode(this)">Standard</div>
+                        <div class="mode-btn" onclick="setMode(this)">Circle Template</div>
+                    </div>
+                </div>
+
+                <!-- Input Content -->
+                <div style="margin-bottom: 24px;">
+                    <label
+                        style="font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; display:block; margin-bottom:12px;">TARGET
+                        URL / TEXT</label>
+                    <input type="text" id="qrData" class="input-field" placeholder="Enter URL or Text"
+                        value="https://talentyug.com" oninput="updateQR()"
+                        style="width:100%; padding:14px; border:1px solid var(--border); border-radius:12px; font-size:16px; outline:none;">
+                </div>
+
+                <!-- Quantity -->
+                <div style="margin-bottom: 24px;">
+                    <label
+                        style="font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; display:block; margin-bottom:12px;">QUANTITY</label>
+                    <input type="number" value="10"
+                        style="width:100%; padding:14px; border:1px solid var(--border); border-radius:12px; font-size:16px; outline:none;">
+                </div>
+
+                <!-- LOGO UPLOAD -->
+                <div style="margin-bottom: 24px;">
+                    <label
+                        style="font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; display:block; margin-bottom:12px;">ADD
+                        LOGO (OPTIONAL)</label>
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <label for="logoInput"
+                            style="cursor:pointer; background:#f1f5f9; padding:8px 16px; border-radius:8px; font-size:14px; font-weight:500; color:var(--text); border:1px solid var(--border);">
+                            Upload Image
+                        </label>
+                        <input type="file" id="logoInput" accept="image/*" style="display:none;"
+                            onchange="handleLogoUpload(this)">
+                        <span id="logoName" style="font-size:12px; color:var(--muted);">No file chosen</span>
+                        <button onclick="clearLogo()" id="clearLogoBtn"
+                            style="display:none; border:none; background:none; color:var(--danger); cursor:pointer;">
+                            <span class="material-icons-round" style="font-size:16px;">close</span>
+                        </button>
+                    </div>
+                </div>
+
+                <hr style="border:0; border-top:1px solid var(--border); margin: 24px 0;">
+
+                <!-- COLORS -->
+                <div style="margin-bottom: 24px;">
+                    <label
+                        style="font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; display:block; margin-bottom:12px;">CUSTOM
+                        COLORS</label>
+                    <div style="display:flex; gap:24px;">
+                        <div>
+                            <label
+                                style="font-size:12px; color:var(--muted); display:block; margin-bottom:4px;">Foreground</label>
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <input type="color" id="fgColor" value="#000000" onchange="generateQR()"
+                                    style="border:none; width:32px; height:32px; cursor:pointer;">
+                                <span style="font-size:13px; font-family:monospace;">#000</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label
+                                style="font-size:12px; color:var(--muted); display:block; margin-bottom:4px;">Background</label>
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <input type="color" id="bgColor" value="#ffffff" onchange="generateQR()"
+                                    style="border:none; width:32px; height:32px; cursor:pointer;">
+                                <span style="font-size:13px; font-family:monospace;">#FFF</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT PREVIEW PANEL -->
+            <div class="d-card" style="text-align:center; position:sticky; top:100px;">
+                <span
+                    style="background:#e0f2fe; color:var(--primary); font-size:11px; font-weight:700; padding:4px 12px; border-radius:20px; display:inline-block; margin-bottom:20px;">LIVE
+                    PREVIEW</span>
+
+                <div
+                    style="background:white; padding:20px; border:2px dashed var(--border); border-radius:16px; display:inline-block; margin-bottom:20px;">
+                    <!-- Canvas for rendering final QR -->
+                    <canvas id="qrCanvas" width="200" height="200"></canvas>
+                    <!-- Hidden div for library generation -->
+                    <div id="qr-hidden" style="display:none;"></div>
+                </div>
+
+                <div id="qr-code-id" style="font-weight:600; color:var(--text); margin-bottom:20px;">TRX-GEN-001</div>
+
+                <button onclick="downloadQR()"
+                    style="width:100%; padding:12px; background:var(--primary); color:white; border:none; border-radius:12px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+                    <span class="material-icons-round">download</span> Download High-Res
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <style>
+        .mode-btn {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--muted);
+            cursor: pointer;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+
+        .mode-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+
+    <script>
+        let logoImage = null;
+
+        function handleLogoUpload(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = new Image();
+                    img.onload = function () {
+                        logoImage = img;
+                        document.getElementById('logoName').innerText = input.files[0].name;
+                        document.getElementById('clearLogoBtn').style.display = 'inline-block';
+                        generateQR();
+                    }
+                    img.src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function clearLogo() {
+            logoImage = null;
+            document.getElementById('logoInput').value = '';
+            document.getElementById('logoName').innerText = "No file chosen";
+            document.getElementById('clearLogoBtn').style.display = 'none';
+            generateQR();
+        }
+
+        function generateQR() {
+            const text = document.getElementById("qrData") ? document.getElementById("qrData").value : "https://talentyug.com";
+            const fg = document.getElementById("fgColor").value;
+            const bg = document.getElementById("bgColor").value;
+
+            // 1. Generate Basic QR into hidden div
+            const hidden = document.getElementById("qr-hidden");
+            hidden.innerHTML = "";
+
+            // Create QR with library
+            new QRCode(hidden, {
+                text: text,
+                width: 1000, // Generate high res internally
+                height: 1000,
+                colorDark: fg,
+                colorLight: bg,
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            // Wait for library to render img
+            setTimeout(() => {
+                const srcImg = hidden.querySelector("img");
+                if (srcImg && srcImg.src) {
+                    drawToCanvas(srcImg.src);
+                } else {
+                    // Fallback for canvas-based libraries
+                    const srcCanvas = hidden.querySelector("canvas");
+                    if (srcCanvas) drawToCanvas(srcCanvas.toDataURL());
+                }
+            }, 50);
+        }
+
+        function drawToCanvas(base64QR) {
+            const canvas = document.getElementById("qrCanvas");
+            const ctx = canvas.getContext("2d");
+            const size = 300; // Display size
+            canvas.width = size;
+            canvas.height = size;
+
+            const qrImg = new Image();
+            qrImg.onload = function () {
+                // Draw QR
+                ctx.drawImage(qrImg, 0, 0, size, size);
+
+                // Draw Logo if exists
+                if (logoImage) {
+                    const logoSize = size * 0.22; // 20% of QR size
+                    const logoPos = (size - logoSize) / 2;
+
+                    // Draw white background for logo (optional, makes it cleaner)
+                    ctx.fillStyle = document.getElementById("bgColor").value;
+                    // ctx.fillRect(logoPos - 5, logoPos - 5, logoSize + 10, logoSize + 10);
+
+                    // Draw Logo
+                    ctx.drawImage(logoImage, logoPos, logoPos, logoSize, logoSize);
+                }
+            }
+            qrImg.src = base64QR;
+        }
+
+        function downloadQR() {
+            const canvas = document.getElementById("qrCanvas");
+            const link = document.createElement("a");
+            link.download = "talentyug-qr.png";
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+        }
+
+        function setMode(el) {
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        function logout() {
+            window.location.href = "login.html";
+        }
+
+        // Init
+        window.onload = function () {
+            generateQR();
+        }
+    </script>
+    <script src="storage.js"></script>
+</body>
+
+</html>
