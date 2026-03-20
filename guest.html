@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Guest List - TalentYug</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+
+  <script src="auth.js"></script>
+  <script>requireAuth();</script>
+
+  <style>
+    :root {
+      --primary: #005070;
+      --bg: #f7f8f9;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --danger: #b42318;
+      --radius: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text)
+    }
+
+
+    /* NAVBAR */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 28px
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .logo img {
+      height: 38px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 18px
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    .nav-links a:hover {
+      color: var(--primary)
+    }
+
+    .logout {
+      background: rgba(180, 35, 24, .12);
+      color: var(--danger);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* ===== SETTINGS DROPDOWN ===== */
+    .settings {
+      position: relative
+    }
+
+    .settings-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+      color: var(--primary);
+      padding: 6px 10px;
+      border-radius: 8px;
+    }
+
+    .settings-btn:hover {
+      background: #f1f5f9
+    }
+
+    .settings-menu {
+      position: absolute;
+      top: 46px;
+      left: 0;
+      width: 240px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, .12);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 500;
+      animation: fade .15s ease;
+    }
+
+    @keyframes fade {
+      from {
+        opacity: 0;
+        transform: translateY(-6px)
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    .settings-menu a {
+      padding: 14px 18px;
+      font-size: 14px;
+      text-decoration: none;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .settings-menu a:hover {
+      background: #f8fafc
+    }
+
+    .settings-menu a.active {
+      background: #f1f5f9;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .settings-menu a+a {
+      border-top: 1px solid #f1f5f9
+    }
+
+    /* ===== HAMBURGER ===== */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer
+    }
+
+    .hamburger span {
+      width: 22px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+    }
+
+    /* MOBILE MENU */
+.mobile-menu{
+  display:none;
+  flex-direction:column;
+  background:var(--card);
+  border-bottom:1px solid var(--border);
+  padding:14px 20px;
+}
+.mobile-menu a{
+  padding:10px 0;
+  text-decoration:none;
+  color:var(--text);
+  font-weight:500;
+}
+.mobile-settings {
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.mobile-settings .settings-btn {
+  padding: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text);
+  background: transparent;
+}
+.mobile-settings .settings-menu {
+  position: static;
+  box-shadow: none;
+  border: none;
+  padding-left: 12px;
+  width: 100%;
+  margin-top: 10px;
+  border-left: 2px solid var(--border);
+  border-radius: 0;
+}
+.mobile-settings .settings-menu a {
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+/* ================= PAGE ================= */
+    .container {
+      max-width: 1400px;
+      margin: auto;
+      padding: 28px 20px 60px
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 22px
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: var(--muted)
+    }
+
+    /* ================= CARD ================= */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    /* FILTER BAR */
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .search {
+      flex: 1;
+      max-width: 320px
+    }
+
+    .search input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .sort select {
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #fff;
+    }
+
+    /* TABLE */
+    .table-wrap {
+      overflow-x: auto
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px
+    }
+
+    th {
+      text-align: left;
+      padding: 14px;
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 14px;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+
+    tr:hover {
+      background: #fafafa
+    }
+
+    /* ACTION */
+    .icon-btn {
+      background: none;
+      border: none;
+      cursor: pointer
+    }
+
+    .icon-btn span {
+      opacity: .6
+    }
+
+    .icon-btn:hover span {
+      opacity: 1
+    }
+
+    /* BUTTON */
+    .btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn.secondary {
+      background: #fff;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    /* MODAL */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .35);
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-box {
+      background: #fff;
+      padding: 22px;
+      border-radius: 14px;
+      width: 100%;
+      max-width: 360px;
+    }
+
+    .modal-box input,
+    select {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    /* RESPONSIVE */
+    @media(max-width:1024px) {
+      .kpis {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .grid-2 {
+        grid-template-columns: 1fr
+      }
+    }
+
+    @media(max-width:863px) {
+      .nav-links {
+        display: none
+      }
+
+      .hamburger {
+        display: flex
+      }
+    }
+
+    @media(max-width:768px) {
+      .container {
+        padding: 20px 16px 80px;
+        max-width: 100vw;
+        overflow-x: hidden;
+      }
+      .navbar {
+        padding: 12px 16px;
+      }
+      .header-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+      .kpis {
+        grid-template-columns: 1fr;
+      }
+      .filters {
+        flex-direction: column;
+        gap: 16px;
+      }
+      .search, .search input {
+        max-width: 100%;
+      }
+      .sort, .sort select {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="navbar">
+    <div class="nav-left">
+      <div class="logo">
+        <img src="logo.png" alt="TalentYug">
+      </div>
+      <div class="nav-links">
+        <a href="Event.html">My Events</a>
+        <a href="Dashboard.html">Dashboard</a>
+        <a href="qr.html">QR Codes</a>
+        <a href="scanner.html">Scanner</a>
+        <a href="guest.html" class="active">Guest Lists</a>
+        <div class="settings">
+          <button class="settings-btn" data-settings-toggle>
+            Settings ▾
+          </button>
+          <div class="settings-menu" id="settingsMenu">
+            <a href="pre-registration.html">Pre-Registration Form</a>
+            <a href="pre-reg-submissions.html">Pre-Reg Submissions</a>
+            <a href="scanner-settings.html">Scanner Settings</a>
+            <a href="settings.html">Event Settings</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="logout" onclick="logout()">Logout</button>
+      <div class="hamburger" onclick="toggleMenu()" id="hamburger">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOBILE MENU -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="Event.html">My Events</a>
+    <a href="Dashboard.html">Dashboard</a>
+    <a href="qr.html">QR Codes</a>
+    <a href="scanner.html">Scanner</a>
+    <a href="guest.html" class="active">Guest Lists</a>
+    <div class="settings mobile-settings">
+      <button class="settings-btn" data-settings-toggle>
+        Settings ▾
+      </button>
+      <div class="settings-menu">
+        <a href="pre-registration.html">Pre-Registration Form</a>
+        <a href="pre-reg-submissions.html">Pre-Reg Submissions</a>
+        <a href="scanner-settings.html">Scanner Settings</a>
+        <a href="settings.html">Event Settings</a>
+      </div>
+    </div>
+  </div>
+  </div>
+
+<div class="container">
+
+    <div class="header">
+      <div>
+        <h1>Guest List</h1>
+        <div class="subtitle">Verified attendees for this event</div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn secondary" onclick="exportCSV()">Export</button>
+        <label class="btn secondary">
+          Import
+          <input type="file" hidden accept=".csv" onchange="importCSV(this.files[0])">
+        </label>
+        <button class="btn" onclick="openModal()">Add Guest</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="filter-bar">
+        <div class="search">
+          <input id="searchInput" placeholder="Search by name, contact or QR">
+        </div>
+        <div class="sort">
+          <select id="sortSelect" onchange="render()">
+            <option value="oldest" selected>Oldest</option>
+            <option value="newest">Newest</option>
+            <option value="name">Name A-Z</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 50px;">#</th>
+              <th>Guest Name</th>
+              <th>Contact</th>
+              <th>QR Serial</th>
+              <th>Status</th>
+              <th>Scans</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="guestBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal" id="modal">
+    <div class="modal-box">
+      <strong id="modalTitle">Add Guest</strong>
+      <p style="font-size:13px;color:var(--muted)">Duplicate contacts not allowed</p>
+      <input type="hidden" id="editGuestId">
+      <input id="name" placeholder="Full name">
+      <input id="contact" placeholder="Phone number (10 digits)" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+      <select id="status">
+        <option value="confirmed">Confirmed</option>
+        <option value="pending">Pending</option>
+      </select>
+      <button class="btn" onclick="saveGuestAction()">Save Guest</button>
+    </div>
+  </div>
+
+  <script>
+
+
+    /* AUTO-CONVERT PRE-REG â†’ GUEST */
+    function autoConvertPreRegs() {
+      const PRE = "pre_reg_submissions";
+      const GUESTS = "guests";
+
+      const regs = JSON.parse(localStorage.getItem(PRE)) || [];
+      if (!regs.length) return;
+
+      let guests = JSON.parse(localStorage.getItem(GUESTS)) || [];
+      let added = 0;
+
+      regs.forEach(r => {
+        const email =
+          r.data.Email ||
+          r.data.email ||
+          r.data["Email Address"];
+
+        if (!email) return;
+
+        if (!guests.some(g => g.contact === email.toLowerCase())) {
+          guests.push({
+            id: "TY-" + Date.now().toString().slice(-6),
+            name: r.data.Name || "Guest",
+            contact: email.toLowerCase(),
+            status: "confirmed",
+            scans: 0,
+            createdAt: Date.now()
+          });
+          added++;
+        }
+      });
+
+      if (added) {
+        localStorage.setItem(GUESTS, JSON.stringify(guests));
+        localStorage.removeItem(PRE); // prevents duplicates
+      }
+    }
+
+    //  CALL IT IMMEDIATELY
+    autoConvertPreRegs();
+
+
+
+    const KEY = "guests";
+    const getGuests = () => JSON.parse(localStorage.getItem(KEY)) || [];
+    const saveGuests = d => localStorage.setItem(KEY, JSON.stringify(d));
+
+    const body = document.getElementById("guestBody");
+    const modal = document.getElementById("modal");
+    const searchInput = document.getElementById("searchInput");
+    const sortSelect = document.getElementById("sortSelect");
+    const menu = document.getElementById("mobileMenu");
+
+    function toggleMenu() {
+      if (event) event.stopPropagation();
+      menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+    }
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 768) menu.style.display = "none";
+    });
+
+    function generateQR() {
+      return "TY-" + Date.now().toString().slice(-6) + "-" + Math.random().toString(36).slice(2, 6).toUpperCase();
+    }
+
+    function openModal(editId = null) { 
+      modal.style.display = "flex";
+      const title = document.getElementById("modalTitle");
+      const idInput = document.getElementById("editGuestId");
+      const nameInput = document.getElementById("name");
+      const contactInput = document.getElementById("contact");
+      const statusInput = document.getElementById("status");
+
+      if (editId) {
+        title.textContent = "Edit Guest";
+        const guest = getGuests().find(g => g.id === editId);
+        if (guest) {
+          idInput.value = guest.id;
+          nameInput.value = guest.name;
+          contactInput.value = guest.contact;
+          statusInput.value = guest.status;
+        }
+      } else {
+        title.textContent = "Add Guest";
+        idInput.value = "";
+        nameInput.value = "";
+        contactInput.value = "";
+        statusInput.value = "confirmed";
+      }
+    }
+    
+    function closeModal() { modal.style.display = "none" }
+
+    function saveGuestAction() {
+      const editId = document.getElementById("editGuestId").value;
+      if (editId) {
+        updateGuest(editId);
+      } else {
+        addGuest();
+      }
+    }
+
+    function addGuest() {
+      const name = document.getElementById("name").value.trim();
+      const contact = document.getElementById("contact").value.trim().toLowerCase();
+      const status = document.getElementById("status").value;
+      if (!name || !contact) return alert("All fields required");
+      if (!/^\d{10}$/.test(contact)) return alert("Please enter exactly 10 digits for the phone number.");
+
+      const guests = getGuests();
+      if (guests.some(g => g.contact === contact)) return alert("Guest exists");
+
+      guests.push({ id: generateQR(), name, contact, status, scans: 0, createdAt: Date.now() });
+      saveGuests(guests);
+      closeModal(); render();
+    }
+
+    function updateGuest(id) {
+      const name = document.getElementById("name").value.trim();
+      const contact = document.getElementById("contact").value.trim().toLowerCase();
+      const status = document.getElementById("status").value;
+      
+      if (!name || !contact) return alert("All fields required");
+      if (!/^\d{10}$/.test(contact)) return alert("Please enter exactly 10 digits for the phone number.");
+
+      const guests = getGuests();
+      
+      // Check for duplicate contact only if it changed
+      const currentGuest = guests.find(g => g.id === id);
+      if (currentGuest.contact !== contact && guests.some(g => g.contact === contact)) {
+         return alert("Guest with this contact already exists.");
+      }
+
+      const index = guests.findIndex(g => g.id === id);
+      if (index !== -1) {
+        guests[index].name = name;
+        guests[index].contact = contact;
+        guests[index].status = status;
+        saveGuests(guests);
+        closeModal(); render();
+      }
+    }
+
+    function deleteGuest(id) {
+      if (confirm("Remove guest?")) {
+        saveGuests(getGuests().filter(g => g.id !== id));
+        render();
+      }
+    }
+
+    function render() {
+      let guests = [...getGuests()];
+      const q = searchInput.value.toLowerCase();
+
+      guests = guests.filter(g => g.name.toLowerCase().includes(q) || g.contact.includes(q) || g.id.toLowerCase().includes(q));
+
+      if (sortSelect.value === "name") guests.sort((a, b) => a.name.localeCompare(b.name));
+      if (sortSelect.value === "oldest") guests.sort((a, b) => a.createdAt - b.createdAt);
+      if (sortSelect.value === "newest") guests.sort((a, b) => b.createdAt - a.createdAt);
+
+      body.innerHTML = guests.length ? "" : "<tr><td colspan='7' style='padding:30px;text-align:center;color:var(--muted)'>No guests</td></tr>";
+
+      guests.forEach((g, index) => {
+        body.innerHTML += `
+      <tr>
+        <td style="color:var(--muted); font-weight:500;">${index + 1}</td>
+        <td><strong>${g.name}</strong></td>
+        <td>${g.contact}</td>
+        <td>${g.id}</td>
+        <td>${g.status}</td>
+        <td>${g.scans}</td>
+        <td>
+          <div style="display: flex; gap: 8px;">
+            <button class="icon-btn" onclick="openModal('${g.id}')" title="Edit">
+              <span class="material-icons-round" style="color:var(--primary); font-size:18px;">edit</span>
+            </button>
+            <button class="icon-btn" onclick="deleteGuest('${g.id}')" title="Delete">
+              <span class="material-icons-round" style="color:var(--danger); font-size:18px;">delete</span>
+            </button>
+          </div>
+        </td>
+      </tr>`;
+      });
+    }
+
+    searchInput.oninput = render;
+    window.onclick = e => { if (e.target === modal) closeModal() }
+    render();
+
+    /* ===== SETTINGS DROPDOWN (WORKS EVERYWHERE) ===== */
+    document.querySelectorAll("[data-settings-toggle]").forEach(btn => {
+      btn.addEventListener("click", function (e) {
+        e.stopPropagation();
+
+        const menu = this.nextElementSibling;
+
+        // close others
+        document.querySelectorAll(".settings-menu").forEach(m => {
+          if (m !== menu) m.style.display = "none";
+        });
+
+        menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+      });
+    });
+
+    document.addEventListener("click", () => {
+      document.querySelectorAll(".settings-menu").forEach(m => {
+        m.style.display = "none";
+      });
+    });
+
+
+    /* ===== HAMBURGER TOGGLE ===== */
+    const hamburger = document.getElementById("hamburger");
+    const mobileMenu = document.getElementById("mobileMenu");
+
+    /* Close mobile menu on outside click */
+    document.addEventListener("click", function (e) {
+      if (!e.target.closest(".mobile-menu") &&
+        !e.target.closest("#hamburger")) {
+        mobileMenu.style.display = "none";
+      }
+    });
+
+    /* Auto close on desktop */
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 863) {
+        mobileMenu.style.display = "none";
+      }
+    });
+
+    function logout() {
+      localStorage.removeItem("session");
+      window.location.href = "login.html";
+    }
+  </script>
+
+</body>
+
+</html>
+

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reset Password - TalentYug</title>
+  <link rel="stylesheet" href="auth.css">
+  <script src="auth.js"></script>
+</head>
+<body>
+  <div class="auth-box">
+    <h2>Reset Password</h2>
+
+    <input id="email" type="email" placeholder="Registered email address" autocomplete="email">
+    <input id="newPassword" type="password" placeholder="New password" autocomplete="new-password">
+    <input id="confirmPassword" type="password" placeholder="Confirm new password" autocomplete="new-password">
+
+    <button type="button" onclick="resetPassword()">Update Password</button>
+
+    <p style="margin-top:14px">
+      This reset works with the website's current local account system.
+    </p>
+
+    <p><a href="login.html">Back to Login</a></p>
+  </div>
+</body>
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TalentYug Navbar</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --primary:#005070;
+  --border:#0a8fa0;
+  --bg:#ffffff;
+}
+
+*{
+  box-sizing:border-box;
+  font-family:'Inter', sans-serif;
+}
+
+body{
+  margin:0;
+  background:#fff;
+}
+
+/* ================= NAVBAR ================= */
+.navbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:18px 48px;
+  background:var(--bg);
+  border-bottom:1px solid #eaeaea;
+}
+
+/* LOGO */
+.logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:22px;
+  font-weight:600;
+  color:var(--primary);
+}
+
+.logo img{
+  height:38px;
+}
+
+/* RIGHT GROUP */
+.right-group{
+  display:flex;
+  align-items:center;
+  gap:28px;
+}
+
+/* LINKS */
+.nav-links{
+  display:flex;
+  gap:25px;
+}
+
+.nav-links a{
+  text-decoration:none;
+  color:#111;
+  font-weight:500;
+  letter-spacing:.4px;
+}
+
+/* AUTH BUTTONS */
+.auth-buttons{
+  display:flex;
+}
+
+.login-btn{
+  padding:10px 30px;
+  border:2px solid var(--border);
+  margin-right:10px;
+  border-radius:999px 999px 0 999px;
+  background:#fff;
+  color:#111;
+  font-weight:500;
+  text-decoration:none;
+  transition:.2s;
+}
+
+.register-btn{
+  padding:10px 25px;
+  border:2px solid var(--border);
+  border-radius:999px 999px 999px 0;
+  background:#fff;
+  color:#111;
+  font-weight:500;
+  text-decoration:none;
+  transition:.2s;
+}
+
+.login-btn:hover,
+.register-btn:hover{
+  background:#005070;
+  color:#ffffff;
+  border-color:var(--primary);
+}
+
+/* ================= HAMBURGER ================= */
+.hamburger{
+  display:none;
+  flex-direction:column;
+  gap:6px;
+  cursor:pointer;
+}
+
+.hamburger span{
+  width:26px;
+  height:3px;
+  background:#111;
+  border-radius:2px;
+  transition:all .3s ease;
+}
+
+/* HAMBURGER â†’ X */
+.hamburger.active span:nth-child(1){
+  transform:translateY(9px) rotate(45deg);
+}
+
+.hamburger.active span:nth-child(2){
+  opacity:0;
+}
+
+.hamburger.active span:nth-child(3){
+  transform:translateY(-9px) rotate(-45deg);
+}
+
+/* ================= MOBILE MENU ================= */
+.mobile-menu{
+  display:none;
+  flex-direction:column;
+  background:#fff;
+  border-top:1px solid #eaeaea;
+  padding:16px 24px;
+}
+
+.mobile-menu a{
+  padding:10px 0;
+  text-decoration:none;
+  color:#111;
+  font-weight:500;
+}
+
+/* ================= RESPONSIVE ================= */
+@media(max-width:900px){
+  .nav-links,
+  .auth-buttons{
+    display:none;
+  }
+
+  .hamburger{
+    display:flex;
+  }
+
+  .navbar{
+    padding:16px 24px;
+  }
+
+  .mobile-menu.show{
+    display:flex;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="logo">
+
+    <img src="logo.png" alt="TalentYug">
+  </div>
+
+  <div class="right-group">
+    <div class="nav-links">
+      <a href="register.html">COLLEGES</a>
+      <a href="register.html">COMPANIES</a>
+      <a href="register.html">STUDENTS</a>
+    </div>
+
+    <div class="auth-buttons">
+      <a href="login.html" class="login-btn">Login</a>
+      <a href="register.html" class="register-btn">Register</a>
+    </div>
+
+    <div class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Toggle navigation">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="register.html">COLLEGES</a>
+  <a href="register.html">COMPANIES</a>
+  <a href="register.html">STUDENTS</a>
+  <a href="login.html">Login</a>
+  <a href="register.html">Register</a>
+</div>
+
+<script>
+const hamburger = document.getElementById("hamburger");
+const menu = document.getElementById("mobileMenu");
+
+function toggleMenu(){
+  hamburger.classList.toggle("active");
+  menu.classList.toggle("show");
+    document.body.style.overflow = menu.classList.contains("show") ? "hidden" : "";
+
+}
+
+function closeMenu(){
+  hamburger.classList.remove("active");
+  menu.classList.remove("show");
+  document.body.style.overflow = "";
+
+}
+
+document.querySelectorAll(".mobile-menu a").forEach(link=>{
+  link.addEventListener("click", closeMenu);
+});
+
+/* Auto close on resize */
+window.addEventListener("resize",()=>{
+  if(window.innerWidth > 900){
+    closeMenu();
+  }
+});
+</script>
+
+</body>
+</html>
+

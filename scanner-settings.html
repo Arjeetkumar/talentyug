@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Scanner Settings - TalentYug</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="auth.js"></script>
+    <script>requireAuth();</script>
+
+    <style>
+        :root {
+            --primary: #005070;
+            --accent: #49c6dd;
+            --bg: #f7f8f9;
+            --card: #ffffff;
+            --text: #0f172a;
+            --muted: #6b7280;
+            --border: #e3e3e3;
+            --danger: #b42318;
+            --radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text)
+        }
+
+        /* NAVBAR */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #fff;
+            border-bottom: 1px solid var(--border);
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .logo img {
+            height: 38px;
+            width: auto;
+            object-fit: contain;
+            mix-blend-mode: multiply;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            font-weight: 500;
+            color: var(--muted);
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .settings {
+            position: relative;
+        }
+
+        .settings-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text);
+            padding: 6px 10px;
+            border-radius: 8px;
+        }
+
+        .settings-btn:hover {
+            background: #f1f5f9;
+        }
+
+        .settings-menu {
+            position: absolute;
+            top: 46px;
+            left: 0;
+            width: 240px;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            box-shadow: 0 20px 40px rgba(15, 23, 42, .12);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 500;
+            animation: fade .15s ease;
+        }
+
+        @keyframes fade {
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .settings-menu a {
+            padding: 14px 18px;
+            font-size: 14px;
+            text-decoration: none;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .settings-menu a:hover {
+            background: #f8fafc;
+        }
+
+        .settings-menu a.active {
+            background: #f1f5f9;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .settings-menu a+a {
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .logout {
+            background: rgba(180, 35, 24, .12);
+            color: var(--danger);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .hamburger span {
+            width: 22px;
+            height: 2px;
+            background: var(--text);
+            border-radius: 2px;
+        }
+
+        .mobile-menu {
+            display: none;
+            flex-direction: column;
+            background: #fff;
+            border-bottom: 1px solid var(--border);
+            padding: 14px 20px;
+        }
+
+        .mobile-menu a {
+            padding: 10px 0;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .mobile-settings {
+            padding: 10px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .mobile-settings .settings-btn {
+            padding: 0;
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text);
+            background: transparent;
+        }
+
+        .mobile-settings .settings-menu {
+            position: static;
+            box-shadow: none;
+            border: none;
+            padding-left: 12px;
+            width: 100%;
+            margin-top: 10px;
+            border-left: 2px solid var(--border);
+            border-radius: 0;
+        }
+
+        .mobile-settings .settings-menu a {
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+
+        /* PAGE */
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            padding: 40px 20px 100px;
+        }
+
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .title-group h1 {
+            margin: 0;
+            color: var(--primary);
+            font-size: 28px;
+        }
+
+        .title-group p {
+            margin: 6px 0 0;
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+            transition: 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #003d57;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 80, 112, 0.2);
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn-outline:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* SETTINGS CARDS */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        .setting-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 32px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 28px rgba(0, 0, 0, .04);
+        }
+
+        .setting-card h2 {
+            margin: 0 0 8px 0;
+            font-size: 20px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .setting-card p {
+            margin: 0 0 24px 0;
+            color: var(--muted);
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .setting-row:first-of-type {
+            border-top: none;
+            padding-top: 0;
+        }
+
+        .setting-info h3 {
+            margin: 0 0 4px 0;
+            font-size: 16px;
+            color: var(--text);
+        }
+
+        .setting-info p {
+            margin: 0;
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        /* TOGGLE SWITCH */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #cbd5e1;
+            transition: .3s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        input:checked+.slider {
+            background-color: var(--primary);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(22px);
+        }
+
+        input:disabled+.slider {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* FORM ELEMENTS */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+            transition: 0.2s;
+            background: #fff;
+            color: var(--text);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 80, 112, 0.1);
+        }
+
+        .device-list {
+            margin-top: 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .device-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background: #fff;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .device-item:last-child {
+            border-bottom: none;
+        }
+
+        .device-item:hover {
+            background: #f8fafc;
+        }
+
+        .device-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .device-icon {
+            width: 48px;
+            height: 48px;
+            background: #f1f5f9;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        .device-name {
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .device-meta {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .status-online {
+            color: #16a34a;
+        }
+
+        .status-online::before {
+            content: "";
+            display: block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #16a34a;
+            box-shadow: 0 0 0 2px #dcfce7;
+        }
+
+        .status-offline {
+            color: var(--muted);
+        }
+
+        .status-offline::before {
+            content: "";
+            display: block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--muted);
+        }
+
+        /* RESPONSIVE */
+        @media(max-width:863px) {
+            .nav-links {
+                display: none
+            }
+
+            .hamburger {
+                display: flex
+            }
+
+            .setting-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .setting-row .toggle-switch {
+                align-self: flex-start;
+            }
+        }
+
+        @media(max-width:768px) {
+            .container {
+                padding: 20px 16px 80px;
+                max-width: 100vw;
+                overflow-x: hidden;
+            }
+
+            .navbar {
+                padding: 12px 16px;
+            }
+
+            .header-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .title-group h1 {
+                font-size: 24px;
+            }
+
+            .setting-card {
+                padding: 20px 16px;
+            }
+
+            .device-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- DASHBOARD NAVBAR -->
+    <div class="navbar">
+    <div class="nav-left">
+      <div class="logo">
+        <img src="logo.png" alt="TalentYug">
+      </div>
+      <div class="nav-links">
+        <a href="Event.html">My Events</a>
+        <a href="Dashboard.html">Dashboard</a>
+        <a href="qr.html">QR Codes</a>
+        <a href="scanner.html">Scanner</a>
+        <a href="guest.html">Guest Lists</a>
+        <div class="settings">
+          <button class="settings-btn" data-settings-toggle>
+            Settings ▾
+          </button>
+          <div class="settings-menu" id="settingsMenu">
+            <a href="pre-registration.html">Pre-Registration Form</a>
+            <a href="pre-reg-submissions.html">Pre-Reg Submissions</a>
+            <a href="scanner-settings.html">Scanner Settings</a>
+            <a href="settings.html">Event Settings</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="logout" onclick="logout()">Logout</button>
+      <div class="hamburger" onclick="toggleMenu()" id="hamburger">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOBILE MENU -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="Event.html">My Events</a>
+    <a href="Dashboard.html">Dashboard</a>
+    <a href="qr.html">QR Codes</a>
+    <a href="scanner.html">Scanner</a>
+    <a href="guest.html">Guest Lists</a>
+    <div class="settings mobile-settings">
+      <button class="settings-btn" data-settings-toggle>
+        Settings ▾
+      </button>
+      <div class="settings-menu">
+        <a href="pre-registration.html">Pre-Registration Form</a>
+        <a href="pre-reg-submissions.html">Pre-Reg Submissions</a>
+        <a href="scanner-settings.html">Scanner Settings</a>
+        <a href="settings.html">Event Settings</a>
+      </div>
+    </div>
+  </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="container">
+
+        <div class="header-row">
+            <div class="title-group">
+                <h1>Scanner Settings</h1>
+                <p>Configure QR Code scanning behavior and paired devices for "TalentYug 2026"</p>
+            </div>
+            <div class="actions-group">
+                <button class="btn btn-primary" onclick="saveSettings()" id="saveBtn"><span class="material-icons-round"
+                        style="font-size: 20px;">save</span> Save Changes</button>
+            </div>
+        </div>
+
+        <div class="settings-grid">
+
+            <!-- Scanning Behavior -->
+            <div class="setting-card">
+                <h2><span class="material-icons-round" style="color: var(--primary);">document_scanner</span> Scanning
+                    Behavior</h2>
+                <p>Control what happens when an attendee's QR code is successfully scanned at the door.</p>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <h3>Auto Check-in</h3>
+                        <p>Automatically update the attendee's status to "Checked-In" upon successful scan.</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="autoCheckin" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <h3>Sound Feedback</h3>
+                        <p>Play a confirmation beep when a QR code is read successfully, or an error buzz for invalid
+                            codes.</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="soundFeedback" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <h3>Vibration Feedback (Mobile)</h3>
+                        <p>Trigger device haptics on successful and failed scans.</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="vibrationFeedback" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <h3>Prevent Duplicate Scans</h3>
+                        <p>Show a warning and block check-in if a QR code has already been scanned.</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="preventDuplicates" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-row" style="flex-direction: column; align-items: flex-start; gap: 16px;">
+                    <div class="setting-info" style="width: 100%;">
+                        <h3>Success Message Duration</h3>
+                        <p>How long the "Check-in Successful" overlay remains on screen before resetting the scanner.
+                        </p>
+                    </div>
+                    <div style="width: 100%; max-width: 300px;">
+                        <select class="form-control" id="messageDuration">
+                            <option value="1000">1 Second (Fastest)</option>
+                            <option value="2000" selected>2 Seconds (Default)</option>
+                            <option value="3000">3 Seconds</option>
+                            <option value="manual">Manual Dismissal</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Paired Devices -->
+            <div class="setting-card">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
+                    <div>
+                        <h2><span class="material-icons-round" style="color: var(--primary);">devices</span> Paired
+                            Devices</h2>
+                        <p style="margin: 0;">Manage the devices currently authorized to scan tickets for this event.
+                        </p>
+                    </div>
+                    <button class="btn btn-outline" onclick="pairNewDevice()"><span
+                            class="material-icons-round">qr_code_scanner</span> Pair New Device</button>
+                </div>
+
+                <div class="device-list">
+
+                    <div class="device-item">
+                        <div class="device-info">
+                            <div class="device-icon">
+                                <span class="material-icons-round" style="font-size: 28px;">laptop_mac</span>
+                            </div>
+                            <div>
+                                <div class="device-name">Main Entrance Laptop <span
+                                        style="font-size: 12px; font-weight: normal; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border); margin-left: 8px;">Current
+                                        Device</span></div>
+                                <div class="device-meta">Added: Oct 24, 2023 â€¢ Last Active: Just now</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 24px;">
+                            <span class="status-indicator status-online">Online</span>
+                        </div>
+                    </div>
+
+                    <div class="device-item">
+                        <div class="device-info">
+                            <div class="device-icon">
+                                <span class="material-icons-round" style="font-size: 28px;">smartphone</span>
+                            </div>
+                            <div>
+                                <div class="device-name">Volunteer Phone 1</div>
+                                <div class="device-meta">Added: Oct 25, 2023 â€¢ Last Active: 2 hrs ago</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 24px;">
+                            <span class="status-indicator status-offline">Offline</span>
+                            <button class="btn-outline"
+                                style="padding: 6px 12px; border: 1px solid #fca5a5; color: #991b1b; border-radius: 6px; cursor: pointer; background: white;"
+                                title="Revoke Access">Revoke</button>
+                        </div>
+                    </div>
+
+                    <div class="device-item">
+                        <div class="device-info">
+                            <div class="device-icon">
+                                <span class="material-icons-round" style="font-size: 28px;">tablet_mac</span>
+                            </div>
+                            <div>
+                                <div class="device-name">VIP Entrance iPad</div>
+                                <div class="device-meta">Added: Oct 25, 2023 â€¢ Last Active: 1 day ago</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 24px;">
+                            <span class="status-indicator status-offline">Offline</span>
+                            <button class="btn-outline"
+                                style="padding: 6px 12px; border: 1px solid #fca5a5; color: #991b1b; border-radius: 6px; cursor: pointer; background: white;"
+                                title="Revoke Access">Revoke</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Security & Validation -->
+            <div class="setting-card">
+                <h2><span class="material-icons-round" style="color: var(--primary);">security</span> Security &
+                    Validation</h2>
+                <p>Ensure that only legitimate and authorized QR codes are accepted by the scanner.</p>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <h3>Require Cryptographic Signature</h3>
+                        <p>Only validate QR codes generated directly from TalentYug's secured database to prevent
+                            forgery.</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="cryptoSignature" checked disabled>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-row" style="flex-direction: column; align-items: flex-start; gap: 16px;">
+                    <div class="setting-info" style="width: 100%;">
+                        <h3>Allowed Ticket Types</h3>
+                        <p>Restrict entry at this specific scanning station to certain ticket types only.</p>
+                    </div>
+                    <div style="width: 100%; display: flex; gap: 16px; flex-wrap: wrap;">
+                        <label
+                            style="display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: 14px; cursor: pointer;">
+                            <input type="checkbox" checked
+                                style="width: 18px; height: 18px; accent-color: var(--primary);">
+                            General Admission
+                        </label>
+                        <label
+                            style="display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: 14px; cursor: pointer;">
+                            <input type="checkbox" checked
+                                style="width: 18px; height: 18px; accent-color: var(--primary);">
+                            VIP Pass
+                        </label>
+                        <label
+                            style="display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: 14px; cursor: pointer;">
+                            <input type="checkbox" checked
+                                style="width: 18px; height: 18px; accent-color: var(--primary);">
+                            Staff / Volunteer
+                        </label>
+                        <label
+                            style="display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: 14px; cursor: pointer;">
+                            <input type="checkbox" checked
+                                style="width: 18px; height: 18px; accent-color: var(--primary);">
+                            Speaker
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast"
+        style="position: fixed; bottom: 32px; right: 32px; background: var(--text); color: white; padding: 16px 24px; border-radius: 12px; font-weight: 500; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 12px; transform: translateY(100px); opacity: 0; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000;">
+        <span class="material-icons-round" style="color: #4ade80;">check_circle</span>
+        Settings saved successfully!
+    </div>
+
+    <!-- PAIRING MODAL OVERLAY -->
+    <div id="pairingModal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s;">
+        <div
+            style="background: white; border-radius: 20px; width: 100%; max-width: 400px; padding: 32px; text-align: center; box-shadow: 0 24px 80px rgba(0,0,0,0.2); transform: translateY(20px); transition: transform 0.3s;">
+            <div
+                style="width: 64px; height: 64px; background: #f1f5f9; color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                <span class="material-icons-round" style="font-size: 32px;">qr_code_scanner</span>
+            </div>
+            <h2 style="margin: 0 0 8px 0; color: var(--text); font-size: 20px;">Pair New Device</h2>
+            <p style="margin: 0 0 24px 0; color: var(--muted); font-size: 15px;">Scan this pairing code using the
+                TalentYug app on the device you want to use as a scanner.</p>
+
+            <div
+                style="background: white; border: 1px solid var(--border); padding: 16px; border-radius: 16px; display: inline-block; margin-bottom: 24px;">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=talentyug-pairing-token-abc123xyz"
+                    alt="Pairing QR Code" style="display: block; width: 200px; height: 200px;">
+            </div>
+
+            <button class="btn btn-outline" style="width: 100%; justify-content: center;"
+                onclick="closePairingModal()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        function logout() {
+            window.location.href = "login.html";
+        }
+
+        function toggleMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+        }
+
+        window.addEventListener("resize", () => {
+            if (window.innerWidth > 900) {
+                const menu = document.getElementById('mobileMenu');
+                if (menu) menu.style.display = "none";
+            }
+        });
+
+        /* Settings dropdown toggle */
+        document.querySelectorAll("[data-settings-toggle]").forEach(btn => {
+            btn.addEventListener("click", function (e) {
+                e.stopPropagation();
+                const menu = this.nextElementSibling;
+                document.querySelectorAll(".settings-menu").forEach(m => {
+                    if (m !== menu) m.style.display = "none";
+                });
+                menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+            });
+        });
+
+        document.addEventListener("click", () => {
+            document.querySelectorAll(".settings-menu").forEach(m => m.style.display = "none");
+        });
+
+        function saveSettings() {
+            const btn = document.getElementById('saveBtn');
+            btn.innerHTML = '<span class="material-icons-round" style="font-size: 20px; animation: rotating 2s linear infinite;">autorenew</span> Saving...';
+            btn.disabled = true;
+
+            // Simulate API call
+            setTimeout(() => {
+                btn.innerHTML = '<span class="material-icons-round" style="font-size: 20px;">save</span> Save Changes';
+                btn.disabled = false;
+
+                const toast = document.getElementById('toast');
+                toast.style.transform = 'translateY(0)';
+                toast.style.opacity = '1';
+
+                setTimeout(() => {
+                    toast.style.transform = 'translateY(100px)';
+                    toast.style.opacity = '0';
+                }, 3000);
+            }, 800);
+        }
+
+        // Add simple spinning animation for the save button
+        const style = document.createElement('style');
+        style.textContent = `
+    @keyframes rotating {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+`;
+        document.head.appendChild(style);
+
+        function pairNewDevice() {
+            const modal = document.getElementById('pairingModal');
+            modal.style.display = 'flex';
+            // Small delay to trigger CSS transition
+            setTimeout(() => {
+                modal.style.opacity = '1';
+                modal.querySelector('div').style.transform = 'translateY(0)';
+            }, 10);
+        }
+
+        function closePairingModal() {
+            const modal = document.getElementById('pairingModal');
+            modal.style.opacity = '0';
+            modal.querySelector('div').style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 200);
+        }
+    </script>
+
+</body>
+
+</html>
+

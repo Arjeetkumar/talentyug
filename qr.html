@@ -2,351 +2,759 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>QR Generator Dashboard – TalentYug</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- Material Icons -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-    <!-- QR Code Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <style>
-        .material-icons-round {
-            vertical-align: middle;
-        }
+  <meta charset="UTF-8">
+  <title>QR Codes - TalentYug</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        /* Grid override for 3 items if using .kpis class which defaults to 4 */
-        .kpis.three-col {
-            grid-template-columns: repeat(3, 1fr);
-        }
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0/lib/qr-code-styling.js"></script>
 
-        @media (max-width: 1024px) {
-            .kpis.three-col {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
+  <script src="auth.js"></script>
+  <script>requireAuth()</script>
 
-        @media (max-width: 600px) {
-            .kpis.three-col {
-                grid-template-columns: 1fr;
-            }
-        }
+  <style>
+    :root {
+      --primary: #005070;
+      --bg: #f7f8f9;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #6b7280;
+      --border: #e3e3e3;
+      --danger: #b42318;
+      --radius: 16px;
+    }
 
-        /* Generator Layout Specifics using Grid */
-        .generator-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 24px;
-            align-items: start;
-        }
+    * {
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif
+    }
 
-        @media (max-width: 900px) {
-            .generator-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text)
+    }
+
+    /* ================= NAVBAR ================= */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 28px
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .logo img {
+      height: 38px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 18px
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    .nav-links a:hover {
+      color: var(--primary)
+    }
+
+    .logout {
+      background: rgba(180, 35, 24, .12);
+      color: var(--danger);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* ===== SETTINGS DROPDOWN ===== */
+    .settings {
+      position: relative
+    }
+
+    .settings-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+      color: var(--primary);
+      padding: 6px 10px;
+      border-radius: 8px;
+    }
+
+    .settings-btn:hover {
+      background: #f1f5f9
+    }
+
+    .settings-menu {
+      position: absolute;
+      top: 46px;
+      left: 0;
+      width: 240px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, .12);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 500;
+      animation: fade .15s ease;
+    }
+
+    @keyframes fade {
+      from {
+        opacity: 0;
+        transform: translateY(-6px)
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    .settings-menu a {
+      padding: 14px 18px;
+      font-size: 14px;
+      text-decoration: none;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .settings-menu a:hover {
+      background: #f8fafc
+    }
+
+    .settings-menu a.active {
+      background: #f1f5f9;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .settings-menu a+a {
+      border-top: 1px solid #f1f5f9
+    }
+
+    /* ===== HAMBURGER ===== */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer
+    }
+
+    .hamburger span {
+      width: 22px;
+      height: 2px;
+      background: var(--text)
+    }
+
+    /* MOBILE MENU */
+.mobile-menu{
+  display:none;
+  flex-direction:column;
+  background:var(--card);
+  border-bottom:1px solid var(--border);
+  padding:14px 20px;
+}
+.mobile-menu a{
+  padding:10px 0;
+  text-decoration:none;
+  color:var(--text);
+  font-weight:500;
+}
+.mobile-settings {
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.mobile-settings .settings-btn {
+  padding: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text);
+  background: transparent;
+}
+.mobile-settings .settings-menu {
+  position: static;
+  box-shadow: none;
+  border: none;
+  padding-left: 12px;
+  width: 100%;
+  margin-top: 10px;
+  border-left: 2px solid var(--border);
+  border-radius: 0;
+}
+.mobile-settings .settings-menu a {
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+/* LOGOUT */
+    .logout {
+      background: rgba(180, 35, 24, .12);
+      color: var(--danger);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* MOBILE MENU */
+    .mobile-menu {
+      display: none;
+      flex-direction: column;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 20px;
+    }
+
+    .mobile-menu a {
+      padding: 10px 0;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .mobile-menu a.active {
+      color: var(--primary)
+    }
+
+    /* ================= PAGE ================= */
+    .container {
+      max-width: 1400px;
+      margin: auto;
+      padding: 28px 20px 60px;
+    }
+
+    .page-head {
+      margin-bottom: 28px;
+    }
+
+    .page-head h1 {
+      margin: 0;
+      font-size: 26px;
+      color: var(--primary);
+    }
+
+    .page-head span {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    /* ================= GRID ================= */
+    .grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+
+    /* ================= CARD ================= */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 24px;
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, .04);
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 18px;
+      color: var(--primary);
+    }
+
+    /* ================= FORM ================= */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .control {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    input,
+    select {
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      font-size: 14px;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .full {
+      grid-column: span 2
+    }
+
+    /* BUTTON */
+    .primary {
+      margin-top: 22px;
+      padding: 14px;
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .primary:hover {
+      background: #00455f
+    }
+
+    /* PREVIEW */
+    .preview-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .preview-label {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    #qrPreview {
+      width: 260px;
+      height: 260px;
+      padding: 16px;
+      border-radius: 16px;
+      background: #fff;
+      border: 1px dashed var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #qrPreview canvas {
+      max-width: 220px
+    }
+
+    /* RESPONSIVE */
+    @media(max-width:1024px) {
+      .kpis {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .grid-2 {
+        grid-template-columns: 1fr
+      }
+    }
+
+    @media(max-width:863px) {
+      .nav-links {
+        display: none
+      }
+
+      .hamburger {
+        display: flex
+      }
+    }
+
+    /* ================= RESPONSIVE ================= */
+
+    /* Large Tablets */
+    @media(max-width:1200px) {
+      .container {
+        padding: 24px 18px;
+      }
+
+      .grid {
+        grid-template-columns: 1.5fr 1fr;
+        gap: 20px;
+      }
+    }
+
+    /* Tablets */
+    @media(max-width:900px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card {
+        padding: 20px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    /* Small Tablets */
+    @media(max-width:768px) {
+
+      .nav-links {
+        display: none;
+      }
+
+      .hamburger {
+        display: flex;
+      }
+
+      .container {
+        padding: 20px 16px;
+      }
+
+      .page-head h1 {
+        font-size: 22px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .full {
+        grid-column: span 1;
+      }
+
+      #qrPreview {
+        width: 100%;
+        max-width: 260px;
+        height: auto;
+      }
+
+    }
+
+    /* Mobile Phones */
+    @media(max-width:480px) {
+
+      .navbar {
+        padding: 12px 16px;
+      }
+
+      .logo {
+        font-size: 18px;
+      }
+
+      .logout {
+        padding: 6px 12px;
+        font-size: 13px;
+      }
+
+      .page-head h1 {
+        font-size: 20px;
+      }
+
+      .page-head span {
+        font-size: 13px;
+      }
+
+      .primary {
+        padding: 12px;
+        font-size: 14px;
+      }
+
+      .card {
+        padding: 18px;
+      }
+
+    }
+  </style>
 </head>
 
-<body class="dashboard-page">
-
-    <!-- DASHBOARD NAVBAR -->
-    <div class="dashboard-navbar">
-        <div class="nav-left">
-            <div class="nav-logo">
-                <img src="logo.png" alt="TalentYug Logo">
-                TalentYug
-            </div>
-            <div class="nav-links">
-                <a href="Event.html">My Events</a>
-                <a href="dashboard.html">Dashboard</a>
-                <a href="pre-registration.html">Pre-Registration</a>
-                <a href="qr.html" class="active">QR Codes</a>
-                <a href="scanner.html">Scanner</a>
-                <a href="guestlist.html">Guest Lists</a>
-            </div>
+<body>
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="nav-left">
+      <div class="logo">
+        <img src="logo.png" alt="TalentYug">
+      </div>
+      <div class="nav-links">
+        <a href="Event.html">My Events</a>
+        <a href="Dashboard.html">Dashboard</a>
+        <a href="qr.html" class="active">QR Codes</a>
+        <a href="scanner.html">Scanner</a>
+        <a href="guest.html">Guest Lists</a>
+        <div class="settings">
+          <button class="settings-btn" data-settings-toggle>
+            Settings ▾
+          </button>
+          <div class="settings-menu" id="settingsMenu">
+            <a href="pre-registration.html">Pre-Registration Form</a>
+            <a href="pre-reg-submissions.html">Pre-Reg Submissions</a>
+            <a href="scanner-settings.html">Scanner Settings</a>
+            <a href="settings.html">Event Settings</a>
+          </div>
         </div>
-        <div style="display:flex;align-items:center;gap:12px;">
-
-            <button class="logout-btn" onclick="logout()">Logout</button>
-        </div>
+      </div>
     </div>
 
-    <!-- CONTENT CONTAINER -->
-    <div class="dashboard-container">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="logout" onclick="logout()">Logout</button>
+      <div class="hamburger" onclick="toggleMenu()" id="hamburger">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
 
-        <div class="page-header">
-            <div>
-                <h1>Generated Codes (10)</h1>
-                <div class="subtitle">Managing your batch.</div>
-            </div>
-            <!-- User Profile Icon -->
-            <div style="display:flex; align-items:center; gap:12px;">
-                <span class="material-icons-round" onclick="alert('No new notifications')"
-                    style="color:var(--muted); font-size:24px; cursor:pointer;">notifications</span>
-                <div onclick="alert('Profile Settings')"
-                    style="width:32px; height:32px; background:#e2e8f0; border-radius:50%; cursor:pointer;"></div>
-            </div>
-        </div>
+  <!-- MOBILE MENU -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="Event.html">My Events</a>
+    <a href="Dashboard.html">Dashboard</a>
+    <a href="qr.html" class="active">QR Codes</a>
+    <a href="scanner.html">Scanner</a>
+    <a href="guest.html">Guest Lists</a>
+    <div class="settings mobile-settings">
+      <button class="settings-btn" data-settings-toggle>
+        Settings ▾
+      </button>
+      <div class="settings-menu">
+        <a href="pre-registration.html">Pre-Registration Form</a>
+        <a href="pre-reg-submissions.html">Pre-Reg Submissions</a>
+        <a href="scanner-settings.html">Scanner Settings</a>
+        <a href="settings.html">Event Settings</a>
+      </div>
+    </div>
+  </div>
+  </div>
 
-        <!-- STATS (KPIs) -->
-        <div class="kpis three-col">
-            <div class="d-card">
-                <div class="kpi-title">Total Codes</div>
-                <div class="kpi-value">10</div>
-            </div>
-            <div class="d-card">
-                <div class="kpi-title">Scanned / Used</div>
-                <div class="kpi-value" style="color:#10b981;">0</div>
-            </div>
-            <div class="d-card">
-                <div class="kpi-title">Newly Created</div>
-                <div class="kpi-value" style="color:var(--primary);">10</div>
-            </div>
-        </div>
-
-        <!-- GENERATOR SECTION -->
-        <div class="generator-grid">
-
-            <!-- LEFT CONFIG PANEL -->
-            <div class="d-card">
-
-                <!-- Generation Mode -->
-                <div style="margin-bottom: 24px;">
-                    <label
-                        style="font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; display:block; margin-bottom:12px;">GENERATION
-                        MODE</label>
-                    <div style="display:flex; background:#f1f5f9; padding:4px; border-radius:12px;">
-                        <div class="mode-btn active" onclick="setMode(this)">Standard</div>
-                        <div class="mode-btn" onclick="setMode(this)">Circle Template</div>
-                    </div>
-                </div>
-
-                <!-- Input Content -->
-                <div style="margin-bottom: 24px;">
-                    <label
-                        style="font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; display:block; margin-bottom:12px;">TARGET
-                        URL / TEXT</label>
-                    <input type="text" id="qrData" class="input-field" placeholder="Enter URL or Text"
-                        value="https://talentyug.com" oninput="updateQR()"
-                        style="width:100%; padding:14px; border:1px solid var(--border); border-radius:12px; font-size:16px; outline:none;">
-                </div>
-
-                <!-- Quantity -->
-                <div style="margin-bottom: 24px;">
-                    <label
-                        style="font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; display:block; margin-bottom:12px;">QUANTITY</label>
-                    <input type="number" value="10"
-                        style="width:100%; padding:14px; border:1px solid var(--border); border-radius:12px; font-size:16px; outline:none;">
-                </div>
-
-                <!-- LOGO UPLOAD -->
-                <div style="margin-bottom: 24px;">
-                    <label
-                        style="font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; display:block; margin-bottom:12px;">ADD
-                        LOGO (OPTIONAL)</label>
-                    <div style="display:flex; align-items:center; gap:12px;">
-                        <label for="logoInput"
-                            style="cursor:pointer; background:#f1f5f9; padding:8px 16px; border-radius:8px; font-size:14px; font-weight:500; color:var(--text); border:1px solid var(--border);">
-                            Upload Image
-                        </label>
-                        <input type="file" id="logoInput" accept="image/*" style="display:none;"
-                            onchange="handleLogoUpload(this)">
-                        <span id="logoName" style="font-size:12px; color:var(--muted);">No file chosen</span>
-                        <button onclick="clearLogo()" id="clearLogoBtn"
-                            style="display:none; border:none; background:none; color:var(--danger); cursor:pointer;">
-                            <span class="material-icons-round" style="font-size:16px;">close</span>
-                        </button>
-                    </div>
-                </div>
-
-                <hr style="border:0; border-top:1px solid var(--border); margin: 24px 0;">
-
-                <!-- COLORS -->
-                <div style="margin-bottom: 24px;">
-                    <label
-                        style="font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; display:block; margin-bottom:12px;">CUSTOM
-                        COLORS</label>
-                    <div style="display:flex; gap:24px;">
-                        <div>
-                            <label
-                                style="font-size:12px; color:var(--muted); display:block; margin-bottom:4px;">Foreground</label>
-                            <div style="display:flex; align-items:center; gap:8px;">
-                                <input type="color" id="fgColor" value="#000000" onchange="generateQR()"
-                                    style="border:none; width:32px; height:32px; cursor:pointer;">
-                                <span style="font-size:13px; font-family:monospace;">#000</span>
-                            </div>
-                        </div>
-                        <div>
-                            <label
-                                style="font-size:12px; color:var(--muted); display:block; margin-bottom:4px;">Background</label>
-                            <div style="display:flex; align-items:center; gap:8px;">
-                                <input type="color" id="bgColor" value="#ffffff" onchange="generateQR()"
-                                    style="border:none; width:32px; height:32px; cursor:pointer;">
-                                <span style="font-size:13px; font-family:monospace;">#FFF</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- RIGHT PREVIEW PANEL -->
-            <div class="d-card" style="text-align:center; position:sticky; top:100px;">
-                <span
-                    style="background:#e0f2fe; color:var(--primary); font-size:11px; font-weight:700; padding:4px 12px; border-radius:20px; display:inline-block; margin-bottom:20px;">LIVE
-                    PREVIEW</span>
-
-                <div
-                    style="background:white; padding:20px; border:2px dashed var(--border); border-radius:16px; display:inline-block; margin-bottom:20px;">
-                    <!-- Canvas for rendering final QR -->
-                    <canvas id="qrCanvas" width="200" height="200"></canvas>
-                    <!-- Hidden div for library generation -->
-                    <div id="qr-hidden" style="display:none;"></div>
-                </div>
-
-                <div id="qr-code-id" style="font-weight:600; color:var(--text); margin-bottom:20px;">TRX-GEN-001</div>
-
-                <button onclick="downloadQR()"
-                    style="width:100%; padding:12px; background:var(--primary); color:white; border:none; border-radius:12px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
-                    <span class="material-icons-round">download</span> Download High-Res
-                </button>
-            </div>
-
-        </div>
+  <!-- CONTENT -->
+  <div class="container">
+    <div class="page-head">
+      <h1>QR Code Manager</h1>
+      <span>Create and preview secure event QR codes</span>
     </div>
 
-    <style>
-        .mode-btn {
-            flex: 1;
-            text-align: center;
-            padding: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--muted);
-            cursor: pointer;
-            border-radius: 8px;
-            transition: 0.2s;
-        }
+    <div class="grid">
 
-        .mode-btn.active {
-            background: white;
-            color: var(--primary);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-    </style>
+      <div class="card">
+        <div class="section-title">QR Settings</div>
 
-    <script>
-        let logoImage = null;
+        <div class="form-grid">
+          <div class="control">
+            <label>Dot Style</label>
+            <select id="dotStyle">
+              <option value="square">Square</option>
+              <option value="dots">Dots</option>
+              <option value="rounded">Rounded</option>
+            </select>
+          </div>
 
-        function handleLogoUpload(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const img = new Image();
-                    img.onload = function () {
-                        logoImage = img;
-                        document.getElementById('logoName').innerText = input.files[0].name;
-                        document.getElementById('clearLogoBtn').style.display = 'inline-block';
-                        generateQR();
-                    }
-                    img.src = e.target.result;
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
+          <div class="control">
+            <label>Corner Frame</label>
+            <select id="cornerSquare">
+              <option value="square">Square</option>
+              <option value="extra-rounded">Rounded</option>
+            </select>
+          </div>
 
-        function clearLogo() {
-            logoImage = null;
-            document.getElementById('logoInput').value = '';
-            document.getElementById('logoName').innerText = "No file chosen";
-            document.getElementById('clearLogoBtn').style.display = 'none';
-            generateQR();
-        }
+          <div class="control">
+            <label>Corner Dot</label>
+            <select id="cornerDot">
+              <option value="square">Square</option>
+              <option value="dot">Dot</option>
+            </select>
+          </div>
 
-        function generateQR() {
-            const text = document.getElementById("qrData") ? document.getElementById("qrData").value : "https://talentyug.com";
-            const fg = document.getElementById("fgColor").value;
-            const bg = document.getElementById("bgColor").value;
+          <div class="control">
+            <label>QR Color</label>
+            <input type="color" id="color" value="#005070">
+          </div>
 
-            // 1. Generate Basic QR into hidden div
-            const hidden = document.getElementById("qr-hidden");
-            hidden.innerHTML = "";
+          <div class="control">
+            <label>Quantity</label>
+            <input type="number" id="qty" min="1" max="200" value="10">
+          </div>
 
-            // Create QR with library
-            new QRCode(hidden, {
-                text: text,
-                width: 1000, // Generate high res internally
-                height: 1000,
-                colorDark: fg,
-                colorLight: bg,
-                correctLevel: QRCode.CorrectLevel.H
-            });
+          <div class="control full">
+            <label>Logo (optional)</label>
+            <input type="file" id="logo" accept="image/*">
+          </div>
+        </div>
 
-            // Wait for library to render img
-            setTimeout(() => {
-                const srcImg = hidden.querySelector("img");
-                if (srcImg && srcImg.src) {
-                    drawToCanvas(srcImg.src);
-                } else {
-                    // Fallback for canvas-based libraries
-                    const srcCanvas = hidden.querySelector("canvas");
-                    if (srcCanvas) drawToCanvas(srcCanvas.toDataURL());
-                }
-            }, 50);
-        }
+        <button class="primary" onclick="generateQR()">Generate QR Codes</button>
+      </div>
 
-        function drawToCanvas(base64QR) {
-            const canvas = document.getElementById("qrCanvas");
-            const ctx = canvas.getContext("2d");
-            const size = 300; // Display size
-            canvas.width = size;
-            canvas.height = size;
+      <div class="card">
+        <div class="section-title">Live Preview</div>
+        <div class="preview-wrap">
+          <div class="preview-label">Preview updates instantly</div>
+          <div id="qrPreview"></div>
+        </div>
+        <div id="generatedQrs" style="margin-top:20px"></div>
+      </div>
 
-            const qrImg = new Image();
-            qrImg.onload = function () {
-                // Draw QR
-                ctx.drawImage(qrImg, 0, 0, size, size);
+    </div>
+  </div>
 
-                // Draw Logo if exists
-                if (logoImage) {
-                    const logoSize = size * 0.22; // 20% of QR size
-                    const logoPos = (size - logoSize) / 2;
+  <script>
+    let qr;
+    const menu = document.getElementById("mobileMenu");
 
-                    // Draw white background for logo (optional, makes it cleaner)
-                    ctx.fillStyle = document.getElementById("bgColor").value;
-                    // ctx.fillRect(logoPos - 5, logoPos - 5, logoSize + 10, logoSize + 10);
+    function toggleMenu() {
+      menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+    }
 
-                    // Draw Logo
-                    ctx.drawImage(logoImage, logoPos, logoPos, logoSize, logoSize);
-                }
-            }
-            qrImg.src = base64QR;
-        }
+    /* âœ… AUTO-CLOSE MOBILE MENU ON DESKTOP */
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 768) {
+        menu.style.display = "none";
+      }
+    });
 
-        function downloadQR() {
-            const canvas = document.getElementById("qrCanvas");
-            const link = document.createElement("a");
-            link.download = "talentyug-qr.png";
-            link.href = canvas.toDataURL("image/png");
-            link.click();
-        }
+    function renderPreview() {
+      const color = document.getElementById("color").value;
+      const dotStyle = document.getElementById("dotStyle").value;
+      const cornerSquare = document.getElementById("cornerSquare").value;
+      const cornerDot = document.getElementById("cornerDot").value;
+      const logoInput = document.getElementById("logo");
 
-        function setMode(el) {
-            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-            el.classList.add('active');
-        }
+      document.getElementById("qrPreview").innerHTML = "";
 
-        function logout() {
-            window.location.href = "login.html";
-        }
+      qr = new QRCodeStyling({
+        width: 220,
+        height: 220,
+        data: "TY-QR-DEMO-001",
+        dotsOptions: { color, type: dotStyle },
+        cornersSquareOptions: { type: cornerSquare, color },
+        cornersDotOptions: { type: cornerDot, color },
+        image: logoInput.files[0] ? URL.createObjectURL(logoInput.files[0]) : "",
+        imageOptions: { margin: 6, imageSize: .3 },
+        backgroundOptions: { color: "#ffffff" }
+      });
 
-        // Init
-        window.onload = function () {
-            generateQR();
-        }
-    </script>
-    <script src="storage.js"></script>
+      qr.append(document.getElementById("qrPreview"));
+    }
+
+    ["dotStyle", "cornerSquare", "cornerDot", "color", "logo"].forEach(id => {
+      document.getElementById(id).addEventListener("change", renderPreview);
+    });
+
+    renderPreview();
+    function generateQR() {
+      const qty = Math.max(1, Math.min(200, Number(document.getElementById("qty").value) || 1));
+      const color = document.getElementById("color").value;
+      const dotStyle = document.getElementById("dotStyle").value;
+      const cornerSquare = document.getElementById("cornerSquare").value;
+      const cornerDot = document.getElementById("cornerDot").value;
+      const logoInput = document.getElementById("logo");
+      const logo = logoInput.files[0] ? URL.createObjectURL(logoInput.files[0]) : "";
+      const container = document.getElementById("generatedQrs");
+      container.innerHTML = `<div class="section-title">Generated Codes</div>`;
+
+      for (let i = 0; i < qty; i++) {
+        const codeValue = `TY-QR-${String(Date.now()).slice(-6)}-${String(i + 1).padStart(3, "0")}`;
+        const card = document.createElement("div");
+        card.style.border = "1px solid var(--border)";
+        card.style.borderRadius = "16px";
+        card.style.padding = "16px";
+        card.style.marginTop = "12px";
+        card.style.background = "#fff";
+        const qrHolder = document.createElement("div");
+        qrHolder.style.width = "180px";
+        qrHolder.style.height = "180px";
+        qrHolder.style.margin = "0 auto 12px";
+        card.innerHTML = `<div style="font-weight:600; margin-bottom:8px">${codeValue}</div><button class="primary" style="margin-top:12px" type="button">Download PNG</button>`;
+        card.insertBefore(qrHolder, card.children[1]);
+        container.appendChild(card);
+
+        const instance = new QRCodeStyling({
+          width: 180,
+          height: 180,
+          data: codeValue,
+          dotsOptions: { color, type: dotStyle },
+          cornersSquareOptions: { type: cornerSquare, color },
+          cornersDotOptions: { type: cornerDot, color },
+          image: logo,
+          imageOptions: { margin: 6, imageSize: .3 },
+          backgroundOptions: { color: "#ffffff" }
+        });
+        instance.append(qrHolder);
+        card.querySelector("button").addEventListener("click", () => instance.download({ name: codeValue, extension: "png" }));
+      }
+    }
+
+    function toggleSettings() {
+      const m = document.getElementById("settingsMenu");
+      m.style.display = m.style.display === "flex" ? "none" : "flex";
+    }
+
+    window.addEventListener("click", e => {
+      if (!e.target.closest(".settings")) {
+        const m = document.getElementById("settingsMenu");
+        if (m) m.style.display = "none";
+      }
+    });
+
+  </script>
+
 </body>
 
 </html>
+  </script>
+
+</body>
+
+</html>
+    function toggleSettings() {
+      const m = document.getElementById("settingsMenu");
+      m.style.display = m.style.display === "flex" ? "none" : "flex";
+    }
+
+    window.addEventListener("click", e => {
+      if (!e.target.closest(".settings")) {
+        const m = document.getElementById("settingsMenu");
+        if (m) m.style.display = "none";
+      }
+    });
+
+  </script>
+
+</body>
+
+</html>
+
+
+

@@ -1,0 +1,164 @@
+:root{
+  --primary:#005070;
+  --accent:#49ccdd;
+  --bg:#f7f8f9;
+  --card:#ffffff;
+  --text:#0f172a;
+  --muted:#6b7280;
+  --border:#e5e7eb;
+  --radius:14px;
+}
+
+*{
+  box-sizing:border-box;
+  font-family:'Inter', sans-serif;
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(135deg,#f0fbff,#ffffff);
+}
+
+/* ================= AUTH CARD ================= */
+.auth-box{
+  width:100%;
+  max-width:380px;
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:32px 28px;
+  box-shadow:0 20px 45px rgba(0,0,0,.08);
+  animation:fadeUp .35s ease;
+}
+
+.auth-box h2{
+  margin:0 0 18px;
+  color:var(--primary);
+  font-size:24px;
+  text-align:center;
+}
+
+/* ================= INPUTS ================= */
+.auth-box input{
+  width:100%;
+  padding:12px 14px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  font-size:14px;
+  margin-bottom:14px;
+  outline:none;
+  transition:.2s;
+}
+
+.auth-box input:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(73,204,221,.15);
+}
+
+/* ================= BUTTON ================= */
+.auth-box button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:12px;
+  background:var(--primary);
+  color:#fff;
+  font-weight:600;
+  font-size:15px;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.auth-box button:hover{
+  background:#003f57;
+}
+
+/* ================= DIVIDER ================= */
+.divider{
+  display:flex;
+  align-items:center;
+  margin:20px 0;
+  color:var(--muted);
+  font-size:13px;
+}
+
+.divider::before,
+.divider::after{
+  content:"";
+  flex:1;
+  height:1px;
+  background:var(--border);
+}
+
+.divider span{
+  margin:0 10px;
+}
+
+/* ================= GOOGLE BUTTON ================= */
+.g_id_signin{
+  display:flex;
+  justify-content:center;
+  margin-bottom:12px;
+}
+
+/* ================= SOCIAL BUTTONS ================= */
+.social-login {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: white;
+  color: var(--text);
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.social-btn:hover {
+  background: var(--bg);
+  border-color: #d1d5db;
+}
+
+.social-btn img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+/* ================= LINKS ================= */
+.auth-box p{
+  text-align:center;
+  font-size:14px;
+  color:var(--muted);
+}
+
+.auth-box a{
+  color:var(--primary);
+  font-weight:600;
+  text-decoration:none;
+}
+
+.auth-box a:hover{
+  text-decoration:underline;
+}
+
+/* ================= ANIMATION ================= */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(12px)}
+  to{opacity:1;transform:translateY(0)}
+}

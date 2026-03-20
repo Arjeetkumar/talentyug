@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Register – TalentYug</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --primary:#005070;
+  --bg:#f7f8f9;
+  --card:#ffffff;
+  --border:#e3e3e3;
+  --text:#0f172a;
+  --muted:#6b7280;
+}
+*{box-sizing:border-box;font-family:'Inter',sans-serif}
+body{
+  margin:0;
+  min-height:100vh;
+  background:var(--bg);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.auth-box{
+  background:#fff;
+  width:100%;
+  max-width:420px;
+  padding:28px;
+  border-radius:16px;
+  border:1px solid var(--border);
+  box-shadow:0 20px 40px rgba(0,0,0,.06);
+}
+h2{margin:0 0 6px;color:var(--primary)}
+.sub{font-size:14px;color:var(--muted);margin-bottom:20px}
+input{
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  margin-bottom:12px;
+}
+input:focus{outline:none;border-color:var(--primary)}
+.role-title{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:8px}
+.role-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-bottom:16px;
+}
+.role{
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:14px 0;
+  text-align:center;
+  cursor:pointer;
+}
+.role input{display:none}
+.role input:checked + span{
+  color:var(--primary);
+  font-weight:700;
+}
+button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:12px;
+  background:var(--primary);
+  color:#fff;
+  font-weight:600;
+  cursor:pointer;
+}
+#strengthBox{font-size:13px;font-weight:600;margin:-4px 0 12px}
+</style>
+</head>
+
+<body>
+
+<div class="auth-box">
+  <h2>Create Account</h2>
+  <div class="sub">Join TalentYug</div>
+
+  <form onsubmit="event.preventDefault(); register();">
+    <div class="role-title">Register as</div>
+    <div class="role-grid">
+   
+      <label class="role">
+        <input type="radio" name="role" value="student">
+        <span>Student</span>
+      </label>
+      <label class="role">
+        <input type="radio" name="role" value="company">
+        <span>Company</span>
+      </label>
+      <label class="role">
+        <input type="radio" name="role" value="college">
+        <span>College</span>
+      </label>
+    </div>
+
+    <input id="name" placeholder="Full Name" required>
+    <input id="email" type="email" placeholder="Email" required>
+    <input id="password" type="password" placeholder="Password" oninput="checkStrength(this.value)" required>
+    <div id="strengthBox"></div>
+
+    <button type="submit">Register</button>
+  </form>
+</div>
+
+<script>
+function checkStrength(p){
+  const b=document.getElementById("strengthBox");
+  if(p.length<6){b.textContent="Weak password";b.style.color="#b42318";return;}
+  if(/\d/.test(p)&&/[A-Z]/.test(p)&&/[!@#$%^&*]/.test(p)){
+    b.textContent="Strong password";b.style.color="#1f8f5f";
+  }else{
+    b.textContent="Medium password";b.style.color="#ca8a04";
+  }
+}
+</script>
+
+<!-- ✅ LOAD auth.js ONCE -->
+<script src="auth.js"></script>
+
+</body>
+</html>

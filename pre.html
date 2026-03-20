@@ -1,0 +1,2247 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Pre-registration - TalentYug</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Font -->
+    <link rel="stylesheet" href="style.css?v=2">
+    <!-- Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="auth.js"></script>
+    <script>requireAuth();</script>
+
+    <style>
+        /* Keep page-specific styles but remove conflicts with shared CSS */
+        .tabs-content {
+            display: none;
+        }
+
+        .tabs-content.active-tab {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(4px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* BUILDER STYLES */
+        .tabs-wrapper {
+            display: inline-flex;
+            background: var(--border);
+            padding: 4px;
+            border-radius: 99px;
+            margin-bottom: 32px;
+            gap: 4px;
+        }
+
+        .ty-tab {
+            font-weight: 500;
+            color: var(--muted);
+            cursor: pointer;
+            padding: 10px 24px;
+            border-radius: 99px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .ty-tab:hover {
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .ty-tab.active {
+            font-weight: 600;
+            color: var(--primary);
+            background: #fff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .branding-options {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .branding-btn {
+            background: #fff;
+            border: 1px dashed var(--border);
+            color: var(--muted);
+            padding: 14px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            flex: 1;
+            justify-content: center;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.01);
+        }
+
+        .branding-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: #f8fafc;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+
+        .form-header {
+            background: #fff;
+            border-radius: 20px;
+            padding: 32px;
+            border: 1px solid var(--border);
+            border-top: 8px solid var(--primary);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+            margin-bottom: 32px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .form-header:hover {
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.06);
+        }
+
+        .header-branding-preview {
+            height: 140px;
+            background-color: var(--bg-dashboard);
+            border-radius: 12px;
+            margin-bottom: 24px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            font-size: 14px;
+            background-size: cover;
+            background-position: center;
+            border: 1px solid var(--border);
+        }
+
+        .logo-preview {
+            width: 80px;
+            height: 80px;
+            background: var(--border);
+            border-radius: 16px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--muted);
+            background-size: cover;
+            background-position: center;
+            border: 2px solid #fff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            margin-top: -64px;
+            /* Slight overlap on cover if cover exists */
+        }
+
+        .input-title {
+            font-size: 36px;
+            font-weight: 800;
+            border: none;
+            background: transparent;
+            width: 100%;
+            color: var(--text);
+            outline: none;
+            border-bottom: 2px solid transparent;
+            padding-bottom: 8px;
+            letter-spacing: -0.5px;
+            transition: all 0.2s ease;
+        }
+
+        .input-title:focus {
+            border-bottom-color: var(--primary);
+        }
+
+        .input-desc {
+            font-size: 16px;
+            border: none;
+            background: transparent;
+            width: 100%;
+            color: var(--muted);
+            outline: none;
+            border-bottom: 2px solid transparent;
+            padding-bottom: 6px;
+            line-height: 1.6;
+            margin-top: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .input-desc:focus {
+            border-bottom-color: var(--border);
+        }
+
+        /* ===== SETTINGS DROPDOWN ===== */
+        .settings {
+            position: relative
+        }
+
+        .settings-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--primary);
+            padding: 6px 10px;
+            border-radius: 8px;
+        }
+
+        .settings-btn:hover {
+            background: #f1f5f9
+        }
+
+        .settings-menu {
+            position: absolute;
+            top: 46px;
+            left: 0;
+            width: 240px;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            box-shadow: 0 20px 40px rgba(15, 23, 42, .12);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 500;
+            animation: fade .15s ease;
+        }
+
+        @keyframes fade {
+            from {
+                opacity: 0;
+                transform: translateY(-6px)
+            }
+
+            to {
+                opacity: 1
+            }
+        }
+
+        .settings-menu a {
+            padding: 14px 18px;
+            font-size: 14px;
+            text-decoration: none;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .settings-menu a:hover {
+            background: #f8fafc
+        }
+
+        .settings-menu a.active {
+            background: #f1f5f9;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .settings-menu a+a {
+            border-top: 1px solid #f1f5f9
+        }
+
+        /* Questions */
+        .question-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .question-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 32px 24px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+            position: relative;
+            border-left: 5px solid transparent;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .question-card:focus-within,
+        .question-card:hover {
+            border-left-color: var(--primary);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06);
+            transform: translateY(-2px);
+        }
+
+        .q-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .drag-handle {
+            color: var(--border);
+            cursor: grab;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            margin-top: 14px;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+
+        .question-card:hover .drag-handle {
+            opacity: 1;
+        }
+
+        .drag-handle:hover {
+            color: var(--text);
+        }
+
+        /* Analytics Styles */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-card);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        /* Utils */
+        .q-input {
+            background: #f8fafc;
+            border: 1px solid transparent;
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            color: var(--text);
+            width: 100%;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .q-input:focus {
+            background: #fff;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 80, 112, 0.1);
+        }
+
+        .q-select {
+            background: #f8fafc;
+            border: 1px solid transparent;
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text);
+            outline: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .q-select:focus {
+            background: #fff;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 80, 112, 0.1);
+        }
+
+        .q-footer {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 16px;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+
+        /* Switch */
+        .switch-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--muted);
+            cursor: pointer;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border);
+            transition: .4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        }
+
+        input:checked+.slider {
+            background-color: var(--primary);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(20px);
+        }
+
+        /* File Preview */
+        .file-upload-preview {
+            border: 2px dashed var(--border);
+            padding: 24px;
+            text-align: center;
+            border-radius: 12px;
+            color: var(--muted);
+            font-size: 14px;
+            display: none;
+            background: #f8fafc;
+            transition: all 0.2s ease;
+        }
+
+        .file-upload-preview:hover {
+            border-color: var(--primary);
+            background: #f1f5f9;
+        }
+
+        /* Settings Styles */
+        .settings-list {
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            margin-bottom: 16px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.01);
+        }
+
+        .setting-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            border-color: #cbd5e1;
+        }
+
+        .setting-info h4 {
+            margin: 0 0 6px 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .setting-info p {
+            margin: 0;
+            font-size: 14px;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .color-picker-wrapper {
+            display: flex;
+            gap: 12px;
+        }
+
+        .color-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .color-dot:hover {
+            transform: scale(1.1);
+        }
+
+        .color-dot.active::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border: 2px solid var(--text);
+            border-radius: 50%;
+        }
+
+        /* Responses Tab Styles */
+        .response-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+        }
+
+        .response-table th {
+            background: #f8fafc;
+            padding: 16px 24px;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--muted);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .response-table td {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .response-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .response-table tbody tr {
+            transition: all 0.2s;
+        }
+
+        .response-table tbody tr:hover {
+            background: #f1f5f9;
+        }
+
+        @media(max-width:768px) {
+            .container {
+                padding: 20px 16px 80px;
+                max-width: 100vw;
+                overflow-x: hidden;
+            }
+
+            .navbar {
+                padding: 12px 16px;
+            }
+
+            .hero-text h1 {
+                font-size: 28px;
+            }
+
+            .q-card,
+            .setting-item {
+                padding: 20px 16px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .q-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .q-input {
+                width: 100%;
+            }
+
+            .q-select {
+                width: 100%;
+            }
+
+            .q-footer {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+
+            .response-table-container {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+
+<body class="dashboard-page">
+
+    <!-- HIDDEN INPUTS -->
+    <input type="file" id="coverInput" accept="image/*" style="display: none;" onchange="handleCoverUpload(this)">
+    <input type="file" id="logoInput" accept="image/*" style="display: none;" onchange="handleLogoUpload(this)">
+
+    <!-- DASHBOARD NAVBAR -->
+    <div class="navbar">
+        <div class="nav-left">
+            <div class="logo">
+                <img src="logo.png" alt="TalentYug">
+            </div>
+            <div class="nav-links">
+                <a href="Event.html">My Events</a>
+                <a href="Dashboard.html">Dashboard</a>
+                <a href="qr.html">QR Codes</a>
+                <a href="scanner.html">Scanner</a>
+                <a href="guest.html">Guest Lists</a>
+                <div class="settings">
+                    <button class="settings-btn" data-settings-toggle>
+                        Settings ▼
+                    </button>
+                    <div class="settings-menu" id="settingsMenu">
+                        <a href="pre-registration.html" class="active">Pre-Registration Form</a>
+                        <a href="pre-reg-submissions.html">Pre-Reg Submissions</a>
+                        <a href="scanner-settings.html">Scanner Settings</a>
+                        <a href="settings.html">Event Settings</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:12px;">
+            <button class="btn-save" onclick="saveForm()"
+                style="width:auto; padding:8px 16px; font-size:14px; border-radius: 99px;">Save Form</button>
+            <button class="btn-save" onclick="previewForm()"
+                style="width:auto; padding:8px 16px; font-size:14px; background: var(--accent); border-color: var(--accent); border-radius: 99px; color: white;">Preview</button>
+            <button class="logout" onclick="logout()"
+                style="background:rgba(180,35,24,.12); color:var(--danger); border:none; padding:8px 16px; border-radius:999px; font-weight:600; cursor:pointer;">Logout</button>
+            <div class="hamburger" onclick="toggleMenu()" id="hamburger">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MOBILE MENU -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="Event.html">My Events</a>
+        <a href="Dashboard.html">Dashboard</a>
+        <a href="qr.html">QR Codes</a>
+        <a href="scanner.html">Scanner</a>
+        <a href="guest.html">Guest Lists</a>
+        <div class="settings mobile-settings">
+            <button class="settings-btn" data-settings-toggle>
+                Settings ▼
+            </button>
+            <div class="settings-menu">
+                <a href="pre-registration.html" class="active">Pre-Registration Form</a>
+                <a href="pre-reg-submissions.html">Pre-Reg Submissions</a>
+                <a href="scanner-settings.html">Scanner Settings</a>
+                <a href="settings.html">Event Settings</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="dashboard-container" style="max-width:900px; margin: 40px auto 100px auto;">
+
+        <!-- Tab Switcher (In-Page) -->
+        <div style="display:flex; justify-content: center;">
+            <div class="tabs-wrapper">
+                <a id="tab-build" class="ty-tab active" onclick="switchTab('build')">Builder</a>
+                <a id="tab-settings" class="ty-tab" onclick="switchTab('settings')">Settings</a>
+                <a id="tab-responses" class="ty-tab" onclick="switchTab('responses')">Responses (124)</a>
+            </div>
+        </div>
+
+        <!-- BUILD TAB -->
+        <div id="view-build" class="tabs-content active-tab">
+
+            <div class="branding-options">
+                <div class="branding-btn" onclick="toggleCoverImage()">
+                    <span class="material-icons-round">image</span> Add Cover Image
+                </div>
+                <div class="branding-btn" onclick="toggleLogo()">
+                    <span class="material-icons-round">add_a_photo</span> Add Logo
+                </div>
+            </div>
+
+            <div class="form-header">
+                <div class="header-branding-preview" id="coverPreview">
+                    Cover Image Preview
+                </div>
+                <div class="logo-preview" id="logoPreview">Logo</div>
+
+                <input type="text" class="input-title" placeholder="Untitled Form" value="Pre-registration Event 2026">
+                <input type="text" class="input-desc" placeholder="Form Description"
+                    value="Please fill out the details below to register.">
+            </div>
+
+            <div class="question-list" id="questionList">
+                <!-- Initial Question: Full Name -->
+                <div class="question-card">
+                    <div style="display: flex; gap: 12px;">
+                        <div class="drag-handle"><span class="material-icons-round">drag_indicator</span></div>
+                        <div style="width: 100%;">
+                            <div class="q-header">
+                                <input type="text" class="q-input" style="flex: 2;" placeholder="Full Name">
+                                <select class="q-select" onchange="handleTypeChange(this)">
+                                    <option value="short">Short Answer</option>
+                                    <option value="para">Paragraph</option>
+                                    <option value="multi">Multiple Choice</option>
+                                    <option value="check">Checkboxes</option>
+                                    <option value="file">File Upload</option>
+                                    <option value="date">Date</option>
+                                    <option value="time">Time</option>
+                                </select>
+                            </div>
+                            <div class="q-footer">
+                                <button class="btn-icon" title="Duplicate" onclick="duplicateCard(this)"><span
+                                        class="material-icons-round"
+                                        style="font-size: 18px;">content_copy</span></button>
+                                <button class="btn-icon" title="Delete" onclick="deleteCard(this)"><span
+                                        class="material-icons-round" style="font-size: 18px;">delete</span></button>
+                                <div style="width: 1px; height: 24px; background: var(--border); margin: 0 8px;"></div>
+                                <label class="switch-label">
+                                    Required
+                                    <label class="switch">
+                                        <input type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Email Question -->
+                <div class="question-card">
+                    <div style="display: flex; gap: 12px;">
+                        <div class="drag-handle"><span class="material-icons-round">drag_indicator</span></div>
+                        <div style="width: 100%;">
+                            <div class="q-header">
+                                <input type="text" class="q-input" style="flex: 2;" placeholder="Email Address">
+                                <select class="q-select" onchange="handleTypeChange(this)">
+                                    <option value="short" selected>Short Answer</option>
+                                    <option value="para">Paragraph</option>
+                                    <option value="multi">Multiple Choice</option>
+                                    <option value="check">Checkboxes</option>
+                                    <option value="file">File Upload</option>
+                                    <option value="date">Date</option>
+                                    <option value="time">Time</option>
+                                </select>
+                            </div>
+                            <div class="q-footer">
+                                <button class="btn-icon" title="Duplicate" onclick="duplicateCard(this)"><span
+                                        class="material-icons-round"
+                                        style="font-size: 18px;">content_copy</span></button>
+                                <button class="btn-icon" title="Delete" onclick="deleteCard(this)"><span
+                                        class="material-icons-round" style="font-size: 18px;">delete</span></button>
+                                <div style="width: 1px; height: 24px; background: var(--border); margin: 0 8px;"></div>
+                                <label class="switch-label">
+                                    Required
+                                    <label class="switch">
+                                        <input type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phone Question -->
+                <div class="question-card">
+                    <div style="display: flex; gap: 12px;">
+                        <div class="drag-handle"><span class="material-icons-round">drag_indicator</span></div>
+                        <div style="width: 100%;">
+                            <div class="q-header">
+                                <input type="text" class="q-input" style="flex: 2;" placeholder="Phone Number">
+                                <select class="q-select" onchange="handleTypeChange(this)">
+                                    <option value="short" selected>Short Answer</option>
+                                    <option value="para">Paragraph</option>
+                                    <option value="multi">Multiple Choice</option>
+                                    <option value="check">Checkboxes</option>
+                                    <option value="file">File Upload</option>
+                                    <option value="date">Date</option>
+                                    <option value="time">Time</option>
+                                </select>
+                            </div>
+                            <div class="q-footer">
+                                <button class="btn-icon" title="Duplicate" onclick="duplicateCard(this)"><span
+                                        class="material-icons-round"
+                                        style="font-size: 18px;">content_copy</span></button>
+                                <button class="btn-icon" title="Delete" onclick="deleteCard(this)"><span
+                                        class="material-icons-round" style="font-size: 18px;">delete</span></button>
+                                <div style="width: 1px; height: 24px; background: var(--border); margin: 0 8px;"></div>
+                                <label class="switch-label">
+                                    Required
+                                    <label class="switch">
+                                        <input type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pre-added CV Upload for convenience -->
+                <div class="question-card">
+                    <div style="display: flex; gap: 12px;">
+                        <div class="drag-handle"><span class="material-icons-round">drag_indicator</span></div>
+                        <div style="width: 100%;">
+                            <div class="q-header">
+                                <input type="text" class="q-input" style="flex: 2;" placeholder="Upload CV / Resume">
+                                <select class="q-select" onchange="handleTypeChange(this)">
+                                    <option value="short">Short Answer</option>
+                                    <option value="para">Paragraph</option>
+                                    <option value="multi">Multiple Choice</option>
+                                    <option value="check">Checkboxes</option>
+                                    <option selected value="file">File Upload</option>
+                                    <option value="date">Date</option>
+                                    <option value="time">Time</option>
+                                </select>
+                            </div>
+
+                            <div class="file-upload-preview" style="display: block;">
+                                <span class="material-icons-round" style="font-size: 32px;">cloud_upload</span><br>
+                                Respondents will upload a file here.
+                            </div>
+
+                            <div class="q-footer">
+                                <button class="btn-icon" title="Duplicate" onclick="duplicateCard(this)"><span
+                                        class="material-icons-round"
+                                        style="font-size: 18px;">content_copy</span></button>
+                                <button class="btn-icon" title="Delete" onclick="deleteCard(this)"><span
+                                        class="material-icons-round" style="font-size: 18px;">delete</span></button>
+                                <div style="width: 1px; height: 24px; background: var(--border); margin: 0 8px;"></div>
+                                <label class="switch-label">
+                                    Required
+                                    <label class="switch">
+                                        <input type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Button Centered below content -->
+            <div class="add-btn-container" style="display: flex; justify-content: center; margin-top: 32px;">
+                <button class="btn btn-primary" onclick="addQuestion()"
+                    style="border-radius: 99px; padding: 12px 24px; display: flex; align-items: center; gap: 8px;">
+                    <span class="material-icons-round">add</span> Add Question
+                </button>
+            </div>
+        </div>
+
+        <!-- RESPONSES TAB -->
+        <div id="view-responses" class="tabs-content">
+            <div class="analytics-grid">
+                <div class="stat-card">
+                    <div class="stat-value">124</div>
+                    <div class="stat-label">Total Responses</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">Approved</div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h3 style="margin-top: 0; margin-bottom: 20px; font-size: 18px;">Respondent Roles</h3>
+                <div style="max-width: 400px; margin: 0 auto;">
+                    <canvas id="rolesChart"></canvas>
+                </div>
+            </div>
+
+            <h3 style="margin-bottom: 16px;">Recent Responses</h3>
+            <table class="response-table">
+                <thead>
+                    <tr>
+                        <th width="40%">Name</th>
+                        <th width="30%">Email</th>
+                        <th width="30%">Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Arjee</strong></td>
+                        <td>arjee@example.com</td>
+                        <td>Oct 24, 2:30 PM</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sarah Smith</strong></td>
+                        <td>sarah.s@example.com</td>
+                        <td>Oct 24, 1:15 PM</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Michael Chen</strong></td>
+                        <td>m.chen@example.com</td>
+                        <td>Oct 23, 11:45 AM</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- SETTINGS TAB -->
+        <div id="view-settings" class="tabs-content">
+            <div class="settings-list">
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>Generate Event Pass</h4>
+                        <p>Attendees will receive a unique QR pass.</p>
+                    </div>
+                    <div style="display:flex; gap:12px; align-items:center;">
+                        <button class="btn btn-secondary" style="padding:6px 12px; font-size:12px;"
+                            onclick="generatePassPreview()">Preview Pass</button>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Theme Color Picker -->
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>Theme Color</h4>
+                        <p>Select the primary color for the form.</p>
+                    </div>
+                    <div class="color-picker-wrapper">
+                        <div class="color-dot active" style="background: #005070;"
+                            onclick="setThemeColor('#005070', this)"></div>
+                        <div class="color-dot" style="background: #b42318;" onclick="setThemeColor('#b42318', this)">
+                        </div>
+                        <div class="color-dot" style="background: #1f8f5f;" onclick="setThemeColor('#1f8f5f', this)">
+                        </div>
+                        <div class="color-dot" style="background: #6366f1;" onclick="setThemeColor('#6366f1', this)">
+                        </div>
+                        <div class="color-dot" style="background: #d946ef;" onclick="setThemeColor('#d946ef', this)">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>Collect Email Addresses</h4>
+                        <p>Respondents will be required to sign in to Google.</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>Limit to 1 response</h4>
+                        <p>Respondents must sign in to Google.</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>ProgressBar</h4>
+                        <p>Show progress bar at the bottom of form pages.</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>Confirmation Message</h4>
+                        <p id="confMsgPreview">Registration Confirmed!</p>
+                    </div>
+                    <button class="btn btn-secondary" onclick="editConfirmationMessage()">Edit</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- PASS PREVIEW MODAL -->
+    <div id="passModal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div class="pass-card"
+            style="background: white; border-radius: 24px; padding: 32px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); max-width: 400px; width: 100%; text-align: center; position: relative;">
+            <button onclick="closePassModal()"
+                style="position: absolute; top: 16px; right: 16px; background: none; border: none; cursor: pointer; color: var(--muted);"><span
+                    class="material-icons-round">close</span></button>
+            <div class="pass-header"
+                style="background: var(--primary); color: white; padding: 24px; border-radius: 12px; margin-bottom: 24px;">
+                <h2 style="margin: 0; font-size: 20px;">TalentYug 2026</h2>
+                <div style="font-size: 12px; opacity: 0.8; margin-top: 4px;">Event Pass</div>
+            </div>
+            <div id="qrcode" style="display: flex; justify-content: center; margin: 24px 0;"></div>
+            <div style="font-size: 18px; font-weight: 700; color: var(--text);">John Doe</div>
+            <div style="font-size: 14px; color: var(--muted);">General Attendee</div>
+        </div>
+    </div>
+
+    <!-- NAVBAR AND MOBILE MENU STYLES -->
+    <style>
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #fff;
+            border-bottom: 1px solid var(--border);
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .logo img {
+            height: 38px;
+            width: auto;
+            object-fit: contain;
+            mix-blend-mode: multiply;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            font-weight: 500;
+            color: var(--muted);
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .settings {
+            position: relative;
+        }
+
+        .settings-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text);
+            padding: 6px 10px;
+            border-radius: 8px;
+        }
+
+        .settings-btn:hover {
+            background: #f1f5f9;
+        }
+
+        .settings-menu {
+            position: absolute;
+            top: 46px;
+            left: 0;
+            width: 240px;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            box-shadow: 0 20px 40px rgba(15, 23, 42, .12);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 500;
+            animation: fade .15s ease;
+        }
+
+        @keyframes fade {
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .settings-menu a {
+            padding: 14px 18px;
+            font-size: 14px;
+            text-decoration: none;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .settings-menu a:hover {
+            background: #f8fafc;
+        }
+
+        .settings-menu a.active {
+            background: #f1f5f9;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .settings-menu a+a {
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .hamburger span {
+            width: 22px;
+            height: 2px;
+            background: var(--text);
+            border-radius: 2px;
+        }
+
+        .mobile-menu {
+            display: none;
+            flex-direction: column;
+            background: #fff;
+            border-bottom: 1px solid var(--border);
+            padding: 14px 20px;
+        }
+
+        .mobile-menu a {
+            padding: 10px 0;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .mobile-settings {
+            padding: 10px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .mobile-settings .settings-btn {
+            padding: 0;
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text);
+            background: transparent;
+        }
+
+        .mobile-settings .settings-menu {
+            position: static;
+            box-shadow: none;
+            border: none;
+            padding-left: 12px;
+            width: 100%;
+            margin-top: 10px;
+            border-left: 2px solid var(--border);
+            border-radius: 0;
+        }
+
+        .mobile-settings .settings-menu a {
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+
+        .q-footer {
+            display: flex;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 863px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 16px;
+            }
+
+            .form-header,
+            .question-card {
+                padding: 16px;
+            }
+
+            .q-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .q-input,
+            .q-select {
+                width: 100%;
+                flex: none !important;
+            }
+
+            .branding-options {
+                flex-direction: column;
+            }
+
+            .add-btn-container {
+                margin-bottom: 40px;
+            }
+        }
+    </style>
+    <script>
+        // Theme Logic
+        function toggleDarkMode() {
+            const body = document.body;
+            body.classList.toggle('dark-mode');
+            const icon = document.getElementById('themeIcon');
+
+            if (body.classList.contains('dark-mode')) {
+                if (icon) icon.textContent = 'light_mode';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                if (icon) icon.textContent = 'dark_mode';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Init Theme
+        (function () {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                const icon = document.getElementById('themeIcon');
+                if (icon) icon.textContent = 'light_mode';
+            }
+        })();
+
+        // Branding Logic
+        function toggleCoverImage() {
+            document.getElementById('coverInput').click();
+        }
+
+        function toggleLogo() {
+            document.getElementById('logoInput').click();
+        }
+
+        function handleCoverUpload(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const preview = document.getElementById('coverPreview');
+                    preview.style.display = 'flex';
+                    preview.style.backgroundImage = `url('${e.target.result}')`;
+                    preview.textContent = '';
+                    // Add remove button
+                    if (!preview.querySelector('.remove-branding')) {
+                        const removeBtn = document.createElement('button');
+                        removeBtn.className = 'btn-icon remove-branding';
+                        removeBtn.innerHTML = '<span class="material-icons-round" style="color: white; background: rgba(0,0,0,0.5); border-radius: 50%;">close</span>';
+                        removeBtn.style.position = 'absolute';
+                        removeBtn.style.top = '8px';
+                        removeBtn.style.right = '8px';
+                        removeBtn.onclick = (event) => {
+                            event.stopPropagation();
+                            preview.style.backgroundImage = '';
+                            preview.innerHTML = '<span class="material-icons-round" style="font-size: 32px; color: var(--muted); margin-bottom: 8px;">image</span><br>Upload Cover Image';
+                            input.value = '';
+                        };
+                        preview.appendChild(removeBtn);
+                    }
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function handleLogoUpload(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const preview = document.getElementById('logoPreview');
+                    preview.style.display = 'flex';
+                    preview.style.backgroundImage = `url('${e.target.result}')`;
+                    preview.style.backgroundSize = 'contain';
+                    preview.style.backgroundRepeat = 'no-repeat';
+                    preview.style.backgroundPosition = 'center';
+                    preview.textContent = '';
+                    // Add remove button
+                    if (!preview.querySelector('.remove-branding')) {
+                        const removeBtn = document.createElement('button');
+                        removeBtn.className = 'btn-icon remove-branding';
+                        removeBtn.innerHTML = '<span class="material-icons-round" style="color: white; background: rgba(0,0,0,0.5); border-radius: 50%;">close</span>';
+                        removeBtn.style.position = 'absolute';
+                        removeBtn.style.top = '8px';
+                        removeBtn.style.right = '8px';
+                        removeBtn.onclick = (event) => {
+                            event.stopPropagation();
+                            preview.style.backgroundImage = '';
+                            preview.innerHTML = '<span class="material-icons-round" style="font-size: 24px; color: var(--muted); margin-bottom: 4px;">business</span><br>Logo';
+                            input.value = '';
+                        };
+                        preview.appendChild(removeBtn);
+                    }
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Color Picker Logic
+        function setThemeColor(color, dot) {
+            document.documentElement.style.setProperty('--primary', color);
+            document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+            if (dot) dot.classList.add('active');
+        }
+
+        // Tab Logic
+        function switchTab(tabName) {
+            document.querySelectorAll('.ty-tab').forEach(el => el.classList.remove('active'));
+            if (tabName === 'build') document.getElementById('tab-build').classList.add('active');
+            if (tabName === 'settings') document.getElementById('tab-settings').classList.add('active');
+            if (tabName === 'responses') {
+                document.getElementById('tab-responses').classList.add('active');
+                initCharts(); // Render charts when tab is active
+            }
+
+            document.querySelectorAll('.tabs-content').forEach(el => el.classList.remove('active-tab'));
+            document.getElementById(`view-${tabName}`).classList.add('active-tab');
+        }
+
+        // Init Sortable
+        (function () {
+            var el = document.getElementById('questionList');
+            var sortable = Sortable.create(el, {
+                handle: '.drag-handle',
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+                onEnd: function (evt) {
+                    // Logic to save new order could go here
+                }
+            });
+        })();
+
+        // Init Charts (Singleton logic to prevent re-render issues)
+        let chartInstance = null;
+        function initCharts() {
+            if (chartInstance) return; // Already rendered
+
+            const ctx = document.getElementById('rolesChart').getContext('2d');
+            chartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Developer', 'Designer', 'Manager', 'Student', 'Other'],
+                    datasets: [{
+                        data: [45, 25, 15, 10, 5],
+                        backgroundColor: [
+                            '#005070', // Primary
+                            '#49c6dd', // Accent
+                            '#1f8f5f', // Success
+                            '#f59e0b', // Amber
+                            '#6b7280'  // Muted
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        }
+
+        function deleteCard(btn) {
+            if (confirm('Are you sure you want to delete this question?')) {
+                btn.closest('.question-card').remove();
+            }
+        }
+
+        function duplicateCard(btn) {
+            const card = btn.closest('.question-card');
+            const clone = card.cloneNode(true);
+
+            // Copy input values (cloneNode doesn't copy current dynamic values)
+            const originalInputs = card.querySelectorAll('input, select');
+            const cloneInputs = clone.querySelectorAll('input, select');
+            originalInputs.forEach((input, index) => {
+                cloneInputs[index].value = input.value;
+            });
+
+            // Insert after the current card
+            card.parentNode.insertBefore(clone, card.nextSibling);
+
+            // Scroll to new card
+            clone.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // Handle Question Type Change
+        function handleTypeChange(select) {
+            const card = select.closest('.question-card');
+            const filePreview = card.querySelector('.file-upload-preview');
+            const datePreview = card.querySelector('.datetime-preview');
+
+            if (filePreview) filePreview.remove();
+            if (datePreview) datePreview.remove();
+
+            if (select.value === 'file') {
+                const preview = document.createElement('div');
+                preview.className = 'file-upload-preview';
+                preview.style.display = 'block';
+                preview.innerHTML = '<span class="material-icons-round" style="font-size: 32px;">cloud_upload</span><br>Respondents will upload a file here. (Max 10MB)';
+                card.querySelector('.q-header').after(preview);
+            }
+            else if (select.value === 'date') {
+                const preview = document.createElement('div');
+                preview.className = 'datetime-preview';
+                preview.style.display = 'block';
+                preview.innerHTML = '<span class="material-icons-round" style="font-size: 16px; vertical-align: middle;">event</span> Month, day, year';
+                card.querySelector('.q-header').after(preview);
+            }
+            else if (select.value === 'time') {
+                const preview = document.createElement('div');
+                preview.className = 'datetime-preview';
+                preview.style.display = 'block';
+                preview.innerHTML = '<span class="material-icons-round" style="font-size: 16px; vertical-align: middle;">schedule</span> Time';
+                card.querySelector('.q-header').after(preview);
+            }
+            else if (select.value === 'multi') {
+                const preview = document.createElement('div');
+                preview.className = 'datetime-preview options-builder';
+                preview.style.display = 'block';
+                preview.innerHTML = '<span class="material-icons-round" style="font-size: 16px; vertical-align: middle;">radio_button_checked</span> <input type="text" class="options-input" placeholder="Options (comma separated) e.g. Yes, No, Maybe" style="border:none; border-bottom:1px solid var(--border); background:transparent;outline:none;font-size:14px;width:80%;margin-left:8px;" value="Option 1, Option 2">';
+                card.querySelector('.q-header').after(preview);
+            }
+            else if (select.value === 'check') {
+                const preview = document.createElement('div');
+                preview.className = 'datetime-preview options-builder';
+                preview.style.display = 'block';
+                preview.innerHTML = '<span class="material-icons-round" style="font-size: 16px; vertical-align: middle;">check_box</span> <input type="text" class="options-input" placeholder="Options (comma separated) e.g. Red, Green, Blue" style="border:none; border-bottom:1px solid var(--border); background:transparent;outline:none;font-size:14px;width:80%;margin-left:8px;" value="Option 1, Option 2">';
+                card.querySelector('.q-header').after(preview);
+            }
+        }
+
+        // Form Builder Logic
+        function addQuestion() {
+            const list = document.getElementById('questionList');
+            const card = document.createElement('div');
+            card.className = 'question-card center-focus';
+            card.innerHTML = `
+                <div style="display: flex; gap: 12px;">
+                    <div class="drag-handle"><span class="material-icons-round">drag_indicator</span></div>
+                    <div style="width: 100%;">
+                        <div class="q-header">
+                            <input type="text" class="q-input" style="flex: 2;" placeholder="Question">
+                    <select class="q-select" onchange="handleTypeChange(this)">
+                        <option value="short">Short Answer</option>
+                        <option value="para">Paragraph</option>
+                        <option value="multi">Multiple Choice</option>
+                        <option value="check">Checkboxes</option>
+                        <option value="file">File Upload</option>
+                        <option value="date">Date</option>
+                        <option value="time">Time</option>
+                    </select>
+                </div>
+                <div class="q-footer">
+                   <button class="btn-icon" title="Duplicate" onclick="duplicateCard(this)"><span class="material-icons-round" style="font-size: 18px;">content_copy</span></button> 
+                   <button class="btn-icon" title="Delete" onclick="deleteCard(this)"><span class="material-icons-round" style="font-size: 18px;">delete</span></button> 
+                   <div style="width: 1px; height: 24px; background: var(--border); margin: 0 8px;"></div>
+                   <label class="switch-label">
+                       Required
+                       <label class="switch">
+                           <input type="checkbox">
+                           <span class="slider"></span>
+                       </label>
+                   </label>
+                </div>
+                </div></div>
+        `;
+            list.appendChild(card);
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            card.querySelector('.q-input').focus();
+        }
+
+        // Save and Preview Logic
+        function saveForm() {
+            const title = document.querySelector('.input-title').value;
+            const desc = document.querySelector('.input-desc').value;
+            const questionsEl = document.querySelectorAll('.question-card');
+
+            const coverPreview = document.getElementById('coverPreview');
+            const logoPreview = document.getElementById('logoPreview');
+
+            let formData = {
+                title: title,
+                description: desc,
+                themeColor: getComputedStyle(document.documentElement).getPropertyValue("--primary").trim() || "#005070",
+                confirmationMessage: customConfirmationMessage,
+                coverImage: coverPreview.style.backgroundImage || "",
+                logoImage: logoPreview.style.backgroundImage || "",
+                questions: []
+            };
+
+            questionsEl.forEach(card => {
+                const qTitle = card.querySelector('.q-input').value || card.querySelector('.q-input').placeholder || 'Question';
+                const qType = card.querySelector('.q-select').value;
+                const reqSwitch = card.querySelector('.switch input[type="checkbox"]');
+                const qReq = reqSwitch ? reqSwitch.checked : false;
+
+                const optionsInput = card.querySelector('.options-input');
+                const qOptions = optionsInput ? optionsInput.value : '';
+
+                formData.questions.push({
+                    title: qTitle,
+                    type: qType,
+                    required: qReq,
+                    options: qOptions
+                });
+            });
+
+            localStorage.setItem('ty_form_template', JSON.stringify(formData));
+
+            const questions = formData.questions.length;
+
+            const toast = document.createElement('div');
+            toast.textContent = `Form "${title}" with ${questions} fields saved successfully!`;
+            toast.style.position = 'fixed';
+            toast.style.bottom = '20px';
+            toast.style.left = '50%';
+            toast.style.transform = 'translateX(-50%)';
+            toast.style.background = 'var(--text)';
+            toast.style.color = 'var(--bg)';
+            toast.style.padding = '12px 24px';
+            toast.style.borderRadius = '8px';
+            toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+            toast.style.zIndex = '1000';
+            toast.style.fontFamily = "'Inter', sans-serif";
+            toast.style.animation = 'fadeIn 0.3s ease';
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function loadForm() {
+            const savedFormStr = localStorage.getItem('ty_form_template');
+            if (!savedFormStr) return; // Use default HTML
+
+            try {
+                const formData = JSON.parse(savedFormStr);
+                document.querySelector('.input-title').value = formData.title || 'Untitled Form';
+                document.querySelector('.input-desc').value = formData.description || 'Form description';
+                customConfirmationMessage = formData.confirmationMessage || 'Registration Confirmed!';
+                document.getElementById('confMsgPreview').textContent = customConfirmationMessage;
+                if (formData.themeColor) {
+                    document.documentElement.style.setProperty('--primary', formData.themeColor);
+                }
+                customConfirmationMessage = formData.confirmationMessage || 'Registration Confirmed!';
+                document.getElementById('confMsgPreview').textContent = customConfirmationMessage;
+                if (formData.themeColor) {
+                    document.documentElement.style.setProperty('--primary', formData.themeColor);
+                }
+
+                if (formData.coverImage && formData.coverImage !== 'none') {
+                    const preview = document.getElementById('coverPreview');
+                    preview.style.display = 'flex';
+                    preview.style.backgroundImage = formData.coverImage;
+                    preview.textContent = '';
+                    if (!preview.querySelector('.remove-branding')) {
+                        const removeBtn = document.createElement('button');
+                        removeBtn.className = 'btn-icon remove-branding';
+                        removeBtn.innerHTML = '<span class="material-icons-round" style="color: white; background: rgba(0,0,0,0.5); border-radius: 50%;">close</span>';
+                        removeBtn.style.position = 'absolute';
+                        removeBtn.style.top = '8px';
+                        removeBtn.style.right = '8px';
+                        removeBtn.onclick = (event) => {
+                            event.stopPropagation();
+                            preview.style.backgroundImage = '';
+                            preview.innerHTML = 'Cover Image Preview';
+                            document.getElementById('coverInput').value = '';
+                        };
+                        preview.appendChild(removeBtn);
+                    }
+                }
+
+                if (formData.logoImage && formData.logoImage !== 'none') {
+                    const preview = document.getElementById('logoPreview');
+                    preview.style.display = 'flex';
+                    preview.style.backgroundImage = formData.logoImage;
+                    preview.style.backgroundSize = 'contain';
+                    preview.style.backgroundRepeat = 'no-repeat';
+                    preview.style.backgroundPosition = 'center';
+                    preview.textContent = '';
+                    if (!preview.querySelector('.remove-branding')) {
+                        const removeBtn = document.createElement('button');
+                        removeBtn.className = 'btn-icon remove-branding';
+                        removeBtn.innerHTML = '<span class="material-icons-round" style="color: white; background: rgba(0,0,0,0.5); border-radius: 50%;">close</span>';
+                        removeBtn.style.position = 'absolute';
+                        removeBtn.style.top = '8px';
+                        removeBtn.style.right = '8px';
+                        removeBtn.onclick = (event) => {
+                            event.stopPropagation();
+                            preview.style.backgroundImage = '';
+                            preview.innerHTML = 'Logo';
+                            document.getElementById('logoInput').value = '';
+                        };
+                        preview.appendChild(removeBtn);
+                    }
+                }
+
+                const list = document.getElementById('questionList');
+                list.innerHTML = ''; // Clear defaults
+
+                formData.questions.forEach(q => {
+                    const card = document.createElement('div');
+                    card.className = 'question-card center-focus';
+                    card.innerHTML = `
+                        <div style="display: flex; gap: 12px;">
+                            <div class="drag-handle"><span class="material-icons-round">drag_indicator</span></div>
+                            <div style="width: 100%;">
+                                <div class="q-header">
+                                    <input type="text" class="q-input" style="flex: 2;" placeholder="Question" value="${q.title.replace(/"/g, '&quot;')}">
+                            <select class="q-select" onchange="handleTypeChange(this)">
+                                <option value="short" ${q.type === 'short' ? 'selected' : ''}>Short Answer</option>
+                                <option value="para" ${q.type === 'para' ? 'selected' : ''}>Paragraph</option>
+                                <option value="multi" ${q.type === 'multi' ? 'selected' : ''}>Multiple Choice</option>
+                                <option value="check" ${q.type === 'check' ? 'selected' : ''}>Checkboxes</option>
+                                <option value="file" ${q.type === 'file' ? 'selected' : ''}>File Upload</option>
+                                <option value="date" ${q.type === 'date' ? 'selected' : ''}>Date</option>
+                                <option value="time" ${q.type === 'time' ? 'selected' : ''}>Time</option>
+                            </select>
+                        </div>
+                        <div class="q-footer">
+                           <button class="btn-icon" title="Duplicate" onclick="duplicateCard(this)"><span class="material-icons-round" style="font-size: 18px;">content_copy</span></button> 
+                           <button class="btn-icon" title="Delete" onclick="deleteCard(this)"><span class="material-icons-round" style="font-size: 18px;">delete</span></button> 
+                           <div style="width: 1px; height: 24px; background: var(--border); margin: 0 8px;"></div>
+                           <label class="switch-label">
+                               Required
+                               <label class="switch">
+                                   <input type="checkbox" ${q.required ? 'checked' : ''}>
+                                   <span class="slider"></span>
+                               </label>
+                           </label>
+                        </div>
+                        </div></div>
+                    `;
+                    list.appendChild(card);
+                    // trigger preview update if needed
+                    handleTypeChange(card.querySelector('.q-select'));
+                    if (q.options && card.querySelector('.options-input')) {
+                        card.querySelector('.options-input').value = q.options;
+                    }
+                });
+            } catch (e) {
+                console.error("Failed to parse form template", e);
+            }
+        }
+
+        function previewForm() {
+            // Because outerHTML ignores live .value properties, we must explicitly set them as HTML attributes before copying
+            document.querySelectorAll('input').forEach(input => {
+                if (input.type === 'file') return; // Cannot set value on file inputs securely
+                if (input.type === 'checkbox' || input.type === 'radio') {
+                    if (input.checked) input.setAttribute('checked', 'checked');
+                    else input.removeAttribute('checked');
+                } else {
+                    input.setAttribute('value', input.value);
+                }
+            });
+            document.querySelectorAll('select').forEach(select => {
+                Array.from(select.options).forEach(opt => {
+                    if (opt.value === select.value) opt.setAttribute('selected', 'selected');
+                    else opt.removeAttribute('selected');
+                });
+            });
+            document.querySelectorAll('textarea').forEach(ta => {
+                ta.textContent = ta.value;
+            });
+
+            const html = document.documentElement.outerHTML;
+            const newWindow = window.open();
+            newWindow.document.write(html);
+            newWindow.document.close();
+
+            const style = newWindow.document.createElement('style');
+            style.textContent = `
+            .nav-links, .branding-options, .q-footer, .add-btn, .btn-secondary, .btn-primary:not(#submitBtn), .actions button:not(.btn-icon), .drag-handle, .remove-branding, .file-upload-preview, .datetime-preview { display: none !important; }
+            .q-input { border:none; background: transparent; padding: 0; font-weight: 500; font-size: 16px; color: var(--text); }
+            .q-select { display: none; }
+            .question-card { border-left: 4px solid transparent !important; box-shadow: none !important; border: none !important; padding: 0 !important; margin-bottom: 24px !important; }
+            .input-title { pointer-events: none; border-bottom: none !important; }
+            .input-desc { pointer-events: none; border-bottom: none !important; }
+            .container, .dashboard-container { padding-top: 80px; max-width: 640px !important; margin: 0 auto; }
+            .form-header { box-shadow: none !important; border: none !important; padding: 0 !important; margin-bottom: 32px !important; border-top: none !important; background: transparent !important; }
+            /* Hide the Add Question button container by checking for the inline style or being the last child */
+            .dashboard-container > div[style*="justify-content: center"], .container > div[style*="justify-content: center"] { display: none !important; }
+            
+            .mock-input {
+                display: block;
+                width: 100%;
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                margin-top: 16px;
+                padding: 12px;
+                color: var(--text);
+                background: var(--input-bg);
+            }
+            .mock-input:focus { outline: 2px solid var(--primary); border-color: transparent; }
+            
+            /* Visual Enhancements */
+            #progressBar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 4px;
+                background: var(--primary);
+                width: 0%;
+                transition: width 0.3s ease;
+                z-index: 9999;
+            }
+
+            /* Pass Styles for Preview */
+            #successView { display: none; text-align: center; animation: fadeIn 0.5s ease; }
+            .pass-card {
+                background: var(--card);
+                max-width: 380px;
+                margin: 40px auto;
+                border-radius: 24px;
+                overflow: hidden;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+                border: 1px solid var(--border);
+                position: relative;
+            }
+            .pass-header {
+                background: var(--primary);
+                color: white;
+                padding: 32px 20px;
+                text-align: center;
+                position: relative;
+                overflow: hidden;
+            }
+            .pass-header::before {
+                content: "";
+                position: absolute;
+                top: -50px; left: -50px;
+                width: 100px; height: 100px;
+                background: rgba(255,255,255,0.1);
+                border-radius: 50%;
+            }
+            .pass-header::after {
+                content: "";
+                position: absolute;
+                bottom: -30px; right: -30px;
+                width: 80px; height: 80px;
+                background: rgba(255,255,255,0.1);
+                border-radius: 50%;
+            }
+            .pass-body { padding: 32px; background: var(--card); }
+            .pass-qr { margin: 20px auto; display: flex; justify-content: center; }
+            .pass-details { margin-top: 24px;  }
+            .pass-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 12px; color: var(--muted); }
+            .pass-row strong { color: var(--text); font-weight: 600; }
+            .cut-line { 
+                border-top: 2px dashed var(--border); 
+                margin: 24px -32px; 
+                position: relative; 
+            }
+            .cut-line::before, .cut-line::after {
+                content: ""; position: absolute; top: -12px; width: 24px; height: 24px; background: var(--bg); border-radius: 50%;
+            }
+            .cut-line::before { left: -12px; }
+            .cut-line::after { right: -12px; }
+        `;
+            newWindow.document.head.appendChild(style);
+
+            // Inject Confetti Lib
+            const confettiScript = newWindow.document.createElement('script');
+            confettiScript.src = "https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js";
+            newWindow.document.head.appendChild(confettiScript);
+
+            // Inject Progress Bar
+            const progressBar = newWindow.document.createElement('div');
+            progressBar.id = 'progressBar';
+            newWindow.document.body.prepend(progressBar);
+
+            // Clean up header empty previews
+            const headerCover = newWindow.document.getElementById('coverPreview');
+            const headerLogo = newWindow.document.getElementById('logoPreview');
+            if (headerCover && !headerCover.style.backgroundImage) headerCover.style.display = 'none';
+            if (headerLogo && !headerLogo.style.backgroundImage) headerLogo.style.display = 'none';
+
+            // Transform Inputs
+            newWindow.document.querySelectorAll('.question-card').forEach((card, index) => {
+                const titleInput = card.querySelector('.q-input');
+                const titleVal = titleInput.value || titleInput.placeholder || 'Untitled Question';
+
+                // Replace input with static text
+                const titleEl = newWindow.document.createElement('div');
+                titleEl.className = 'q-title';
+                titleEl.style.fontSize = '16px';
+                titleEl.style.fontWeight = '600';
+                titleEl.style.marginBottom = '8px';
+                titleEl.textContent = titleVal;
+                titleInput.replaceWith(titleEl);
+
+                // Get the type selected in the dropdown
+                const selectElement = card.querySelector('.q-select');
+                const qType = selectElement ? selectElement.value : 'short';
+
+                // Add Mock Input based on type
+                let input;
+                const rawOptions = card.querySelector('.options-input') ? card.querySelector('.options-input').value : 'Option 1, Option 2';
+                const optsArray = rawOptions.split(',').map(o => o.trim()).filter(o => o);
+
+                if (qType === 'para') {
+                    input = newWindow.document.createElement('textarea');
+                    input.rows = 4;
+                    input.className = 'mock-input real-val';
+                    input.placeholder = 'Your answer';
+                } else if (qType === 'file') {
+                    input = newWindow.document.createElement('input');
+                    input.type = 'file';
+                    input.className = 'mock-input real-val';
+                    input.style.padding = '8px';
+                    input.style.background = 'white';
+                } else if (qType === 'date') {
+                    input = newWindow.document.createElement('input');
+                    input.type = 'date';
+                    input.className = 'mock-input real-val';
+                } else if (qType === 'time') {
+                    input = newWindow.document.createElement('input');
+                    input.type = 'time';
+                    input.className = 'mock-input real-val';
+                } else if (qType === 'multi') {
+                    input = newWindow.document.createElement('div');
+                    input.className = 'mock-input';
+                    input.style.border = 'none';
+                    input.style.background = 'transparent';
+                    let html = '';
+                    optsArray.forEach(opt => {
+                        html += `<label style="display:flex; align-items:center; margin-top:8px; cursor:pointer;"><input type="radio" value="${opt}" name="mock_radio_${index}" class="real-val" style="margin-right:8px; width:16px; height:16px;"> ${opt}</label>`;
+                    });
+                    input.innerHTML = html;
+                } else if (qType === 'check') {
+                    input = newWindow.document.createElement('div');
+                    input.className = 'mock-input';
+                    input.style.border = 'none';
+                    input.style.background = 'transparent';
+                    let html = '';
+                    optsArray.forEach(opt => {
+                        html += `<label style="display:flex; align-items:center; margin-top:8px; cursor:pointer;"><input type="checkbox" value="${opt}" class="real-val check-val" style="margin-right:8px; width:16px; height:16px;"> ${opt}</label>`;
+                    });
+                    input.innerHTML = html;
+                } else {
+                    input = newWindow.document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'mock-input real-val';
+                    input.placeholder = 'Your answer';
+                }
+
+                // Tag special fields for logic
+                if (titleVal.toLowerCase().includes('name')) input.dataset.type = 'name';
+                if (titleVal.toLowerCase().includes('email')) {
+                    input.dataset.type = 'email';
+                    if (input.tagName === 'INPUT' && input.type === 'text') input.type = 'email';
+                }
+                if (titleVal.toLowerCase().includes('phone')) {
+                    if (input.tagName === 'INPUT' && input.type === 'text') input.type = 'tel';
+                }
+
+                card.appendChild(input);
+            });
+
+            // Inject Submit Button and Success View
+            const container = newWindow.document.querySelector('.dashboard-container') || newWindow.document.body;
+
+            const submitBtn = newWindow.document.createElement('button');
+            submitBtn.id = 'submitBtn';
+            submitBtn.className = 'btn btn-primary';
+            submitBtn.style.marginTop = '24px';
+            submitBtn.style.width = '100%';
+            submitBtn.style.padding = '14px';
+            submitBtn.style.fontSize = '16px';
+            submitBtn.style.borderRadius = '12px';
+            submitBtn.textContent = 'Submit Registration';
+            container.appendChild(submitBtn);
+
+            const successView = newWindow.document.createElement('div');
+            successView.id = 'successView';
+            successView.innerHTML = `
+                <div style="margin-bottom: 24px;">
+                    <div style="width: 64px; height: 64px; background: var(--success); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                        <span class="material-icons-round" style="font-size: 32px;">check</span>
+                    </div>
+                    <h2 style="margin: 0; color: var(--text);">${customConfirmationMessage}</h2>
+                    <p style="color: var(--muted); margin-top: 8px;">Your pass has been generated and sent to your email.</p>
+                </div>
+
+                <div class="pass-card">
+                    <div class="pass-header">
+                        <div style="font-size: 14px; opacity: 0.9; text-transform: uppercase; letter-spacing: 1px;">Admit One</div>
+                        <h2 style="margin: 8px 0 0; font-size: 24px;">TalentYug 2026</h2>
+                    </div>
+                    <div class="pass-body">
+                        <div id="passName" style="font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 4px;">User Name</div>
+                        <div style="font-size: 14px; color: var(--primary);">General Attendee</div>
+                        
+                        <div class="cut-line"></div>
+                        
+                        <div id="previewQr" class="pass-qr"></div>
+                        <div style="font-size: 12px; color: var(--muted);">Scan for seamless entry</div>
+                    </div>
+                </div>
+                
+                <button class="btn btn-secondary" style="margin-top: 24px;" onclick="window.print()">Download Pass</button>
+                <button class="btn btn-primary" style="margin-top: 24px; margin-left: 12px; border-radius: 99px;" onclick="location.reload()">Back to Form</button>
+            `;
+            container.appendChild(successView);
+
+            // Inject Logic Script
+            const script = newWindow.document.createElement('script');
+            script.textContent = `
+                function submitResponse() {
+                    // Check Limit (if enabled)
+                    // Simplified: just check local storage if *this* browser submitted before
+                    const form = document.getElementById('previewForm'); // NOTE: Need to wrap inputs in a form or just grab by class
+                    // Since we didn't wrap in <form id='previewForm'>, let's just grab values manually or simulate FormData
+                    
+                    const questionCards = document.querySelectorAll('.question-card');
+                    const response = {
+                        timestamp: Date.now(),
+                        answers: {}
+                    };
+                    
+                    let name = 'Anonymous';
+                    let email = '';
+                    
+                    questionCards.forEach((card, index) => {
+                         const qKey = 'field_' + index;
+                         const titleText = card.querySelector('.q-title')?.textContent || qKey;
+                         let val = '';
+                         
+                         const realVals = card.querySelectorAll('.real-val');
+                         if(realVals.length === 1) {
+                             if(realVals[0].type === 'radio' || realVals[0].type === 'checkbox') {
+                               if(realVals[0].checked) val = realVals[0].value;
+                             } else {
+                               val = realVals[0].value;
+                             }
+                         } else if (realVals.length > 1) {
+                             const checkedLogs = Array.from(realVals).filter(r => r.checked).map(r => r.value);
+                             val = checkedLogs.join(', ');
+                         }
+                         
+                         response.answers[titleText] = val;
+                         
+                         if(realVals.length > 0) {
+                             const typeHint = realVals[0].dataset.type;
+                             if(typeHint === 'name') name = val;
+                             if(typeHint === 'email') email = val;
+                         }
+                    });
+                    
+                    response.name = name;
+                    response.email = email;
+
+                    const RESPONSES_KEY = 'ty_responses_demo';
+                    const PRE_REG_KEY = 'pre_reg_submissions';
+
+                    let saved = JSON.parse(localStorage.getItem(RESPONSES_KEY) || '[]');
+
+                    response.status = 'Pending';
+                    response.id = 'REG-' + Date.now().toString().slice(-4);
+
+                    saved.unshift(response);
+                    localStorage.setItem(RESPONSES_KEY, JSON.stringify(saved));
+
+                    const preRegData = { ...response.answers };
+                    if (name) preRegData.Name = name;
+                    if (email) preRegData.Email = email;
+                    const preRegSaved = JSON.parse(localStorage.getItem(PRE_REG_KEY) || '[]');
+                    preRegSaved.unshift({
+                        id: response.id,
+                        timestamp: response.timestamp,
+                        status: response.status,
+                        data: preRegData
+                    });
+                    localStorage.setItem(PRE_REG_KEY, JSON.stringify(preRegSaved));
+
+                    try {
+                        window.opener.localStorage.setItem(RESPONSES_KEY, JSON.stringify(saved));
+                        window.opener.localStorage.setItem(PRE_REG_KEY, JSON.stringify(preRegSaved));
+                    } catch(e) {}
+
+                    // Trigger Confetti
+                    if(window.confetti) {
+                        confetti({
+                            particleCount: 150,
+                            spread: 100,
+                            origin: { y: 0.6 }
+                        });
+                    }
+
+                    // Hide Form
+                    const dashContainer = document.querySelector('.dashboard-container');
+                    if (dashContainer) {
+                        Array.from(dashContainer.children).forEach(child => {
+                            if (child.id !== 'successView' && child.id !== 'submitBtn') {
+                                child.style.display = 'none';
+                            }
+                        });
+                        document.getElementById('submitBtn').style.display = 'none';
+                    }
+                    if(document.getElementById('progressBar')) document.getElementById('progressBar').style.display = 'none';
+                    
+                    // Show Success
+                    const successView = document.getElementById('successView');
+                    successView.style.display = 'block';
+                    
+                    // Update Pass Details
+                    document.getElementById('passName').textContent = name || 'Guest';
+                    
+                    // Generate QR
+                    new QRCode(document.getElementById('previewQr'), {
+                        text: "User:" + (name||'Guest') + "|ID:" + Date.now(),
+                        width: 140,
+                        height: 140,
+                        colorDark: "#0f172a",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+                }
+                
+                // Bind Submit
+                document.getElementById('submitBtn').onclick = submitResponse;
+
+                // Add Top Preview Banner
+                const backBar = document.createElement('div');
+                backBar.style.position = 'fixed';
+                backBar.style.top = '0';
+                backBar.style.left = '0';
+                backBar.style.right = '0';
+                backBar.style.background = '#0f172a';
+                backBar.style.color = 'white';
+                backBar.style.padding = '12px 24px';
+                backBar.style.display = 'flex';
+                backBar.style.justifyContent = 'space-between';
+                backBar.style.alignItems = 'center';
+                backBar.style.zIndex = '10000';
+                backBar.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                backBar.style.fontFamily = "'Inter', sans-serif";
+                
+                backBar.innerHTML = '<div style="display:flex; align-items:center; gap:16px;"><button id="closePreviewBtn" style="background:transparent; color:white; border:1px solid rgba(255,255,255,0.3); padding:6px 12px; border-radius:6px; font-weight:600; cursor:pointer; font-size:14px; display:flex; align-items:center; gap:4px; transition:0.2s;"><span class="material-icons-round" style="font-size:18px;">arrow_back</span> Back</button> <div><strong style="font-size:16px;">Preview Mode</strong><span style="opacity:0.7; margin-left:12px; font-size:14px; display:inline-block;">This is how attendees will see your form</span></div></div>';
+                
+                document.body.prepend(backBar);
+                
+                // Add hover effect to close button
+                const btn = document.getElementById('closePreviewBtn');
+                btn.onmouseover = () => btn.style.background = 'rgba(255,255,255,0.1)';
+                btn.onmouseout = () => btn.style.background = 'transparent';
+                btn.onclick = function() { window.close(); };
+            `;
+            newWindow.document.body.appendChild(script);
+        }
+
+        // Pass Generation Logic
+        let customConfirmationMessage = "Registration Confirmed!";
+
+        function editConfirmationMessage() {
+            const newMsg = prompt("Enter new confirmation message:", customConfirmationMessage);
+            if (newMsg && newMsg.trim() !== "") {
+                customConfirmationMessage = newMsg;
+                document.getElementById('confMsgPreview').textContent = customConfirmationMessage;
+            }
+        }
+
+        function generatePassPreview() {
+            const modal = document.getElementById('passModal');
+            modal.style.display = 'flex';
+
+            const qrContainer = document.getElementById('qrcode');
+            qrContainer.innerHTML = ''; // Clear previous
+
+            // Use timeout to allow modal to render before drawing QR
+            setTimeout(() => {
+                new QRCode(qrContainer, {
+                    text: "User:JohnDoe|ID:12345|Event:TalentYug2026",
+                    width: 160,
+                    height: 160,
+                    colorDark: "#0f172a",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            }, 50);
+        }
+
+        function closePassModal() {
+            document.getElementById('passModal').style.display = 'none';
+        }
+
+        function logout() {
+            window.location.href = "login.html";
+        }
+
+        function toggleMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+        }
+
+        window.addEventListener("resize", () => {
+            if (window.innerWidth > 900) {
+                const menu = document.getElementById('mobileMenu');
+                if (menu) menu.style.display = "none";
+            }
+        });
+
+        document.querySelectorAll("[data-settings-toggle]").forEach(btn => {
+            btn.addEventListener("click", function (e) {
+                e.stopPropagation();
+                const menu = this.nextElementSibling;
+                document.querySelectorAll(".settings-menu").forEach(m => {
+                    if (m !== menu) m.style.display = "none";
+                });
+                menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+            });
+        });
+
+        document.addEventListener("click", () => {
+            document.querySelectorAll(".settings-menu").forEach(m => m.style.display = "none");
+        });
+
+        // --- Init Form & Responses ---
+        function renderResponses() {
+            const saved = localStorage.getItem('ty_responses_demo');
+            let responses = [];
+            if (saved) responses = JSON.parse(saved);
+
+            // Update KPIs
+            const total = responses.length;
+            const pending = responses.filter(r => !r.status || r.status === 'Pending').length;
+            const approved = responses.filter(r => r.status === 'Approved').length
+
+            const kpiCards = document.querySelectorAll('#view-responses .stat-value');
+            if (kpiCards.length >= 3) {
+                kpiCards[0].textContent = total;
+                kpiCards[1].textContent = pending;
+                kpiCards[2].textContent = approved;
+            }
+
+            // Update Table
+            const tbody = document.querySelector('#view-responses .response-table tbody');
+            if (tbody) {
+                tbody.innerHTML = '';
+                if (responses.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding: 20px; color: var(--muted);">No responses yet.</td></tr>';
+                } else {
+                    responses.forEach(r => {
+                        const tr = document.createElement('tr');
+                        const dateStr = new Date(r.timestamp).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+                        tr.innerHTML = `
+                            <td><strong>${r.name || 'Anonymous'}</strong></td>
+                            <td>${r.email || 'N/A'}</td>
+                            <td>${dateStr}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadForm();
+            renderResponses();
+        });
+
+    </script>
+</body>
+
+
+</html>
+
+
+
+

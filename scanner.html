@@ -1,206 +1,568 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>QR Scanner – TalentYug</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-    <style>
-        .material-icons-round {
-            vertical-align: middle;
-        }
+<meta charset="UTF-8">
+<title>Scanner - TalentYug</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        #reader {
-            width: 100%;
-            border-radius: 16px;
-            overflow: hidden;
-            background: #000;
-        }
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="auth.js"></script>
+<script>requireAuth()</script>
 
-        #reader video {
-            object-fit: cover;
-            border-radius: 16px;
-        }
-    </style>
+<style>
+
+:root{
+  --primary:#005070;
+  --bg:#f7f8f9;
+  --card:#ffffff;
+  --text:#0f172a;
+  --muted:#6b7280;
+  --border:#e3e3e3;
+  --success:#1f8f5f;
+  --warning:#ca8a04;
+  --danger:#b42318;
+  --radius:16px;
+}
+
+*{
+  box-sizing:border-box;
+  font-family:'Inter',sans-serif;
+}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+}
+
+/* ================= NAVBAR ================= */
+
+.navbar{
+  position:sticky;top:0;z-index:100;
+  background:var(--card);
+  border-bottom:1px solid var(--border);
+  padding:14px 20px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+
+.nav-left{display:flex;align-items:center;gap:28px}
+.nav-right{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:22px;
+  font-weight:600;
+  color:var(--primary);
+}
+
+.logo img{
+  height:38px;
+}
+.nav-links{display:flex;align-items:center;gap:18px}
+.nav-links a{
+    text-decoration:none;
+    font-weight:500;
+    color:var(--muted);
+}
+.nav-links a:hover{color:var(--primary)}
+
+.logout{
+  background:rgba(180,35,24,.12);
+  color:var(--danger);
+  border:none;
+  padding:8px 16px;
+  border-radius:999px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+/* ===== SETTINGS DROPDOWN ===== */
+.settings{position:relative}
+.settings-btn{
+  background:none;border:none;
+  cursor:pointer;
+  font-weight:500;
+  color:var(--primary);
+  padding:6px 10px;
+  border-radius:8px;
+}
+.settings-btn:hover{background:#f1f5f9}
+
+.settings-menu{
+  position:absolute;
+  top:46px;left:0;
+  width:240px;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:14px;
+  box-shadow:0 20px 40px rgba(15,23,42,.12);
+  display:none;
+  flex-direction:column;
+  overflow:hidden;
+  z-index:500;
+  animation:fade .15s ease;
+}
+@keyframes fade{from{opacity:0;transform:translateY(-6px)}to{opacity:1}}
+
+.settings-menu a{
+  padding:14px 18px;
+  font-size:14px;
+  text-decoration:none;
+  color:var(--text);
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.settings-menu a:hover{background:#f8fafc}
+.settings-menu a.active{
+  background:#f1f5f9;
+  color:var(--primary);
+  font-weight:600;
+}
+.settings-menu a + a{border-top:1px solid #f1f5f9}
+
+/* ===== HAMBURGER ===== */
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer}
+.hamburger span{width:22px;height:2px;background:var(--text);  border-radius:2px;
+  }
+
+/* MOBILE MENU */
+.mobile-menu{
+  display:none;
+  flex-direction:column;
+  background:var(--card);
+  border-bottom:1px solid var(--border);
+  padding:14px 20px;
+}
+.mobile-menu a{
+  padding:10px 0;
+  text-decoration:none;
+  color:var(--text);
+  font-weight:500;
+}
+.mobile-settings {
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.mobile-settings .settings-btn {
+  padding: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text);
+  background: transparent;
+}
+.mobile-settings .settings-menu {
+  position: static;
+  box-shadow: none;
+  border: none;
+  padding-left: 12px;
+  width: 100%;
+  margin-top: 10px;
+  border-left: 2px solid var(--border);
+  border-radius: 0;
+}
+.mobile-settings .settings-menu a {
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+/* ================= PAGE ================= */
+.container{
+  max-width:1400px;
+  margin:auto;
+  padding:28px 20px 60px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1.2fr .8fr;
+  gap:24px;
+}
+
+/* ================= CARD ================= */
+
+.card{
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:22px;
+  border:1px solid var(--border);
+}
+
+/* CAMERA */
+
+.camera{
+  height:420px;
+  background:#000;
+  border-radius:14px;
+  overflow:hidden;
+}
+
+.camera video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+/* BUTTONS */
+
+.cam-controls{
+  display:flex;
+  gap:10px;
+  margin-top:14px;
+}
+
+.cam-controls button{
+  flex:1;
+  padding:12px;
+  border:none;
+  border-radius:12px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.primary{
+  background:var(--primary);
+  color:#fff;
+}
+
+.secondary{
+  background:#eef6f8;
+  color:var(--primary);
+}
+
+/* ACTIVITY */
+
+.activity-card{
+  margin-bottom:18px;
+  border-left:4px solid var(--success);
+  background:#f8fafc;
+  padding:14px;
+  border-radius:12px;
+}
+
+.activity-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.status-pill{
+  padding:4px 10px;
+  font-size:12px;
+  font-weight:600;
+  border-radius:999px;
+  background:#e6f6f1;
+  color:var(--success);
+}
+/* SEARCH */
+
+.search-box input{
+  width:100%;
+  padding:12px 14px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  }
+
+.search-result{
+  margin-top:12px;
+  padding:14px;
+  border-radius:12px;
+  background:#f8fafc;
+}
+
+.search-result.success{border-left:4px solid var(--success)}
+.search-result.error{border-left:4px solid var(--danger)}
+
+/* ================= RESPONSIVE ================= */
+
+/* Large tablets */
+@media(max-width:1100px){
+  .grid{
+    grid-template-columns:1fr;
+  }
+}
+
+/* Tablets */
+@media(max-width:900px){
+  .nav-links{
+    display:none;
+  }
+
+  .hamburger{
+    display:flex;
+  }
+
+  .camera{
+    height:340px;
+  }
+}
+
+/* Mobile */
+@media(max-width:600px){
+  .navbar{
+    padding:14px 18px;
+  }
+  .container{
+    padding:20px 16px 50px;
+  }
+  .camera{
+    height:260px;
+  }
+  .cam-controls{
+    flex-direction:column;
+  }
+  .cam-controls button{
+    width:100%;
+  }
+}
+
+/* Small phones */
+@media(max-width:400px){
+  .camera{
+    height:220px;
+  }
+}
+
+</style>
 </head>
 
-<body class="dashboard-page">
+<body>
 
-    <!-- DASHBOARD NAVBAR -->
-    <div class="dashboard-navbar">
-        <div class="nav-left">
-            <div class="nav-logo">
-                <img src="logo.png" alt="TalentYug Logo">
-                TalentYug
-            </div>
-            <div class="nav-links">
-                <a href="Event.html">My Events</a>
-                <a href="dashboard.html">Dashboard</a>
-                <a href="pre-registration.html">Pre-Registration</a>
-                <a href="qr.html">QR Codes</a>
-                <a href="scanner.html" class="active">Scanner</a>
-                <a href="guestlist.html">Guest Lists</a>
-            </div>
+<div class="navbar">
+    <div class="nav-left">
+      <div class="logo">
+        <img src="logo.png" alt="TalentYug">
+      </div>
+      <div class="nav-links">
+        <a href="Event.html">My Events</a>
+        <a href="Dashboard.html">Dashboard</a>
+        <a href="qr.html">QR Codes</a>
+        <a href="scanner.html" class="active">Scanner</a>
+        <a href="guest.html">Guest Lists</a>
+        <div class="settings">
+          <button class="settings-btn" data-settings-toggle>
+            Settings ▾
+          </button>
+          <div class="settings-menu" id="settingsMenu">
+            <a href="pre-registration.html">Pre-Registration Form</a>
+            <a href="pre-reg-submissions.html">Pre-Reg Submissions</a>
+            <a href="scanner-settings.html">Scanner Settings</a>
+            <a href="settings.html">Event Settings</a>
+          </div>
         </div>
-        <div style="display:flex;align-items:center;gap:12px;">
-            <button class="logout-btn" onclick="logout()">Logout</button>
-        </div>
+      </div>
     </div>
 
-    <!-- CONTENT -->
-    <div class="dashboard-container">
-
-        <div class="page-header">
-            <div>
-                <h1>QR Scanner</h1>
-                <div class="subtitle">Scan tickets or check-in guests instantly.</div>
-            </div>
-        </div>
-
-        <div class="dashboard-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:24px;">
-
-            <!-- SCANNER CARD -->
-            <div class="d-card" style="text-align:center;">
-                <div id="reader"></div>
-
-                <div style="margin-top:24px;">
-                    <p style="color:var(--muted); font-size:14px; margin-bottom:16px;">Point your camera at a QR code
-                    </p>
-                    <button id="startScanBtn" class="btn-save" onclick="startScanning()"
-                        style="width:auto; padding:10px 24px;">
-                        <span class="material-icons-round" style="margin-right:8px;">videocam</span> Start Camera
-                    </button>
-                    <button id="stopScanBtn" class="btn-cancel" onclick="stopScanning()"
-                        style="width:auto; padding:10px 24px; display:none; color:var(--danger); border-color:var(--danger);">
-                        Stop Camera
-                    </button>
-                </div>
-            </div>
-
-            <!-- RESULT CARD -->
-            <div class="d-card">
-                <h3 style="margin-bottom:20px; color:var(--text);">Scan Result</h3>
-
-                <div id="scan-placeholder"
-                    style="text-align:center; padding:40px; color:var(--muted); border:2px dashed var(--border); border-radius:12px;">
-                    <span class="material-icons-round" style="font-size:48px; opacity:0.5;">qr_code_scanner</span>
-                    <p style="margin-top:12px;">No code scanned yet.</p>
-                </div>
-
-                <div id="scan-result" style="display:none;">
-                    <div
-                        style="background:#def7ec; color:#03543f; padding:16px; border-radius:12px; margin-bottom:20px; display:flex; gap:12px; align-items:center;">
-                        <span class="material-icons-round">check_circle</span>
-                        <div>
-                            <strong style="display:block; font-size:14px;">Scan Successful</strong>
-                            <span style="font-size:12px;">Just now</span>
-                        </div>
-                    </div>
-
-                    <label style="font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase;">DATA
-                        CONTENT</label>
-                    <div id="result-text"
-                        style="font-size:18px; font-weight:600; color:var(--text); margin-top:4px; margin-bottom:24px; word-break:break-all;">
-                        https://talentyug.com
-                    </div>
-
-                    <div style="display:flex; gap:12px;">
-                        <button class="btn-save" onclick="handleAction('approve')">Approve Entry</button>
-                        <button class="btn-cancel" onclick="handleAction('reject')"
-                            style="background:#fde8e8; color:#9b1c1c; border-color:#f8b4b4;">Reject</button>
-                    </div>
-                </div>
-
-            </div>
-
-        </div>
-
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="logout" onclick="logout()">Logout</button>
+      <div class="hamburger" onclick="toggleMenu()" id="hamburger">
+        <span></span><span></span><span></span>
+      </div>
     </div>
+  </div>
 
-    <script>
-        let html5QrcodeScanner;
+  <!-- MOBILE MENU -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="Event.html">My Events</a>
+    <a href="Dashboard.html">Dashboard</a>
+    <a href="qr.html">QR Codes</a>
+    <a href="scanner.html" class="active">Scanner</a>
+    <a href="guest.html">Guest Lists</a>
+    <div class="settings mobile-settings">
+      <button class="settings-btn" data-settings-toggle>
+        Settings ▾
+      </button>
+      <div class="settings-menu">
+        <a href="pre-registration.html">Pre-Registration Form</a>
+        <a href="pre-reg-submissions.html">Pre-Reg Submissions</a>
+        <a href="scanner-settings.html">Scanner Settings</a>
+        <a href="settings.html">Event Settings</a>
+      </div>
+    </div>
+  </div>
+  </div>
 
-        function startScanning() {
-            document.getElementById('startScanBtn').style.display = 'none';
-            document.getElementById('stopScanBtn').style.display = 'inline-flex';
+<div class="container">
+<div class="grid">
 
-            html5QrcodeScanner = new Html5Qrcode("reader");
+<!-- LEFT -->
+<div class="card">
+  <h3>Live Scanner</h3>
+  <div class="camera">
+    <video id="camera" autoplay muted></video>
+  </div>
 
-            html5QrcodeScanner.start(
-                { facingMode: "environment" },
-                {
-                    fps: 10,
-                    qrbox: { width: 250, height: 250 }
-                },
-                (decodedText, decodedResult) => {
-                    // Success callback
-                    onScanSuccess(decodedText);
-                    stopScanning(); // auto stop after scan
-                },
-                (errorMessage) => {
-                    // parse error, ignore usually
-                }
-            ).catch(err => {
-                alert("Camera access failed: " + err);
-                stopScanning();
-            });
-        }
+  <div class="cam-controls">
+    <button class="primary" onclick="startScanner()">Start</button>
+    <button class="secondary" onclick="flipCamera()">Flip</button>
+    <button class="secondary" onclick="stopScanner()">Stop</button>
+  </div>
+</div>
 
-        function stopScanning() {
-            if (html5QrcodeScanner) {
-                html5QrcodeScanner.stop().then(() => {
-                    html5QrcodeScanner.clear();
-                    document.getElementById('startScanBtn').style.display = 'inline-flex';
-                    document.getElementById('stopScanBtn').style.display = 'none';
-                }).catch(err => console.log(err));
-            }
-        }
+<!-- RIGHT -->
+<div class="card">
 
-        function onScanSuccess(text) {
-            document.getElementById('scan-placeholder').style.display = 'none';
-            document.getElementById('scan-result').style.display = 'block';
-            document.getElementById('result-text').innerText = text;
+  <h3>Live Activity</h3>
+  <div class="activity-card" id="activityCard">
+    <div class="activity-header">
+      <strong id="activityText">Ready to scan</strong>
+      <span class="status-pill" id="statusPill">Idle</span>
+    </div>
+    <div class="activity-time" id="activityTime"></div>
+  </div>
 
-            // Play a beep sound if desired (not implemented here)
-        }
+  <h3 style="margin-top:22px">Manual Check-in</h3>
+  <div class="search-box">
+    <input id="manualSearch" placeholder="Search by name or email (case-insensitive)">
+    <div style="font-size:12px;color:var(--muted);margin-top:8px;">Search first, then confirm the check-in from the result card.</div>
 
-        function handleAction(action) {
-            if (action === 'approve') alert("Guest Approved!");
-            else alert("Guest Rejected!");
+  <div id="searchResult"></div>
 
-            // Reset UI
-            document.getElementById('scan-result').style.display = 'none';
-            document.getElementById('scan-placeholder').style.display = 'block';
+</div>
 
-            // Optionally auto-restart
-            // startScanning(); 
-        }
+</div>
+</div>
 
-        function logout() {
-            window.location.href = "login.html";
-        }
+<script>
+let facing="environment";
+let stream=null;
+const video=document.getElementById("camera");
 
-        function toggleTheme() {
-            const current = Storage.getTheme();
-            const next = current === 'dark' ? 'light' : 'dark';
-            Storage.setTheme(next);
-            updateThemeIcon(next);
-        }
+const activityText=document.getElementById("activityText");
+const statusPill=document.getElementById("statusPill");
+const activityTime=document.getElementById("activityTime");
+const activityCard=document.getElementById("activityCard");
+const searchResult=document.getElementById("searchResult");
 
-        function updateThemeIcon(theme) {
-            const icon = document.querySelector('.theme-icon');
-            if (icon) icon.innerText = theme === 'dark' ? 'light_mode' : 'dark_mode';
-        }
+function setActivity(msg,status){
+  const now=new Date().toLocaleTimeString();
+  activityText.textContent=msg;
+  activityTime.textContent=now;
 
-        // Init Theme UI
-        window.addEventListener('load', () => {
-            updateThemeIcon(Storage.getTheme());
-        });
-    </script>
-    <script src="storage.js"></script>
+  const map={
+    success:["Checked in","var(--success)"],
+    running:["Running","var(--success)"],
+    warning:["Stopped","var(--warning)"],
+    error:["Error","var(--danger)"]
+  };
+
+  statusPill.textContent=map[status][0];
+  activityCard.style.borderLeftColor=map[status][1];
+}
+
+async function startScanner(){
+  try{
+    stopScanner();
+    setActivity("Starting camera...","running");
+    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:facing}});
+    video.srcObject=stream;
+    setActivity("Camera running","running");
+  }catch{
+    setActivity("Camera access denied","error");
+  }
+}
+
+function stopScanner(){
+  if(stream){
+    stream.getTracks().forEach(t=>t.stop());
+    stream=null;
+  }
+  video.srcObject=null;
+  setActivity("Camera stopped","warning");
+}
+
+function flipCamera(){
+  setActivity("Switching camera...","warning");
+  facing=facing==="environment"?"user":"environment";
+  setTimeout(startScanner,300);
+}
+
+/* MANUAL SEARCH */
+/* MANUAL SEARCH */
+function renderManualResult(query){
+  const q=query.trim().toLowerCase();
+  if(!q){ searchResult.innerHTML=""; return; }
+
+  const guests=JSON.parse(localStorage.getItem("guests"))||[];
+  const index=guests.findIndex(x => (x.name || "").toLowerCase().includes(q) || String(x.contact || "").toLowerCase().includes(q));
+
+  if(index !== -1){
+    const g=guests[index];
+    searchResult.innerHTML=`
+      <div class="search-result success">
+        <strong>${g.name}</strong><br>
+        ${g.contact}<br>
+        Status: ${g.status}<br>
+        Total scans: ${g.scans || 0}<br><br>
+        <button class="primary" style="margin-top:0" onclick="checkInGuest(${index})">Confirm Check-in</button>
+      </div>`;
+    setActivity(`Guest found: ${g.name}`,"running");
+  }else{
+    searchResult.innerHTML=`<div class="search-result error">Guest not found</div>`;
+    setActivity("Invalid guest","error");
+  }
+}
+
+document.getElementById("manualSearch").oninput=e=>{
+  renderManualResult(e.target.value);
+};
+
+document.getElementById("manualSearch").addEventListener("keydown", e => {
+  if(e.key === "Enter"){
+    e.preventDefault();
+    const button = searchResult.querySelector("button");
+    if(button) button.click();
+  }
+});
+
+function checkInGuest(index){
+  const guests=JSON.parse(localStorage.getItem("guests"))||[];
+  const g=guests[index];
+  if(!g) return;
+  g.scans = (Number(g.scans) || 0) + 1;
+  g.lastScanAt = Date.now();
+  localStorage.setItem("guests",JSON.stringify(guests));
+  setActivity(`Checked in: ${g.name}`,"success");
+  renderManualResult(document.getElementById("manualSearch").value);
+}
+
+
+const menu = document.getElementById("mobileMenu");
+function toggleMenu(){
+  menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+}
+window.addEventListener("resize",()=>{
+  if(window.innerWidth>900) menu.style.display="none";
+});
+document.querySelectorAll("[data-settings-toggle]").forEach(btn=>{
+  btn.addEventListener("click",function(e){
+    e.stopPropagation();
+    const menu = this.nextElementSibling;
+    document.querySelectorAll(".settings-menu").forEach(m=>{
+      if(m !== menu) m.style.display="none";
+    });
+    menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+  });
+});
+document.addEventListener("click",()=>{
+  document.querySelectorAll(".settings-menu").forEach(m=>{
+    m.style.display="none";
+  });
+});
+
+function logout(){
+  localStorage.removeItem("session");
+  window.location.href="login.html";
+}
+</script>
+
 </body>
-
 </html>
+

@@ -2,280 +2,683 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Event Dashboard – TalentYug</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-    <style>
-        /* Page specific overrides if needed */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 24px;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Events - TalentYug</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="auth.js"></script>
+  <script>requireAuth();</script>
+  <style>
+    :root {
+      --primary: #005070;
+      --bg: #f7f8f9;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #6b7280;
+      --border: #e3e3e3;
+      --success: #1f8f5f;
+      --danger: #b42318;
+      --radius: 16px;
+    }
 
-        .event-menu-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            cursor: pointer;
-            color: var(--muted);
-        }
+    * {
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif
+    }
 
-        .event-dropdown {
-            display: none;
-            position: absolute;
-            top: 40px;
-            right: 20px;
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            z-index: 10;
-            overflow: hidden;
-            min-width: 150px;
-        }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text)
+    }
 
-        .event-dropdown div {
-            padding: 10px 16px;
-            font-size: 14px;
-            cursor: pointer;
-            color: var(--text);
-            transition: background 0.1s;
-        }
+    /* NAVBAR */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-        .event-dropdown div:hover {
-            background: #f1f5f9;
-            color: var(--primary);
-        }
-    </style>
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 28px
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .logo img {
+      height: 38px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 18px
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    .nav-links a:hover {
+      color: var(--primary)
+    }
+
+    .logout {
+      background: rgba(180, 35, 24, .12);
+      color: var(--danger);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* ===== SETTINGS DROPDOWN ===== */
+    .settings {
+      position: relative
+    }
+
+    .settings-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+      color: var(--primary);
+      padding: 6px 10px;
+      border-radius: 8px;
+    }
+
+    .settings-btn:hover {
+      background: #f1f5f9
+    }
+
+    .settings-menu {
+      position: absolute;
+      top: 46px;
+      left: 0;
+      width: 240px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, .12);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 500;
+      animation: fade .15s ease;
+    }
+
+    @keyframes fade {
+      from {
+        opacity: 0;
+        transform: translateY(-6px)
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    .settings-menu a {
+      padding: 14px 18px;
+      font-size: 14px;
+      text-decoration: none;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .settings-menu a:hover {
+      background: #f8fafc
+    }
+
+    .settings-menu a.active {
+      background: #f1f5f9;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .settings-menu a+a {
+      border-top: 1px solid #f1f5f9
+    }
+
+    /* ===== HAMBURGER ===== */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer
+    }
+
+    .hamburger span {
+      width: 22px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+    }
+
+    /* MOBILE MENU */
+    .mobile-menu {
+      display: none;
+      flex-direction: column;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 20px;
+    }
+
+    .mobile-menu a {
+      padding: 10px 0;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .mobile-settings {
+      padding: 10px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .mobile-settings .settings-btn {
+      padding: 0;
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text);
+      background: transparent;
+    }
+
+    .mobile-settings .settings-menu {
+      position: static;
+      box-shadow: none;
+      border: none;
+      padding-left: 12px;
+      width: 100%;
+      margin-top: 10px;
+      border-left: 2px solid var(--border);
+      border-radius: 0;
+    }
+
+    .mobile-settings .settings-menu a {
+      padding: 8px 12px;
+      font-size: 14px;
+    }
+
+    /* ================= PAGE STYLES (RESTORED) ================= */
+    .container {
+      max-width: 1400px;
+      margin: auto;
+      padding: 28px 20px
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .controls input,
+    .controls select {
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      font-size: 14px;
+    }
+
+    .bulk-actions {
+      display: none;
+      gap: 10px;
+    }
+
+    .bulk-actions button {
+      background: var(--danger);
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .filters {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .filter-btn {
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .filter-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 22px;
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, .04);
+      position: relative;
+      min-height: 230px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+    }
+
+    .create-card {
+      border: 2px dashed var(--border);
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .plus {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .badge {
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    .badge.active {
+      background: rgba(31, 143, 95, .12);
+      color: var(--success);
+    }
+
+    .badge.closed {
+      background: rgba(180, 35, 24, .12);
+      color: var(--danger);
+    }
+
+    .actions {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      display: flex;
+      gap: 14px;
+      font-size: 13px;
+    }
+
+    .actions span {
+      cursor: pointer;
+      color: var(--muted);
+    }
+
+    .actions span:hover {
+      color: var(--primary);
+    }
+
+    .actions .danger:hover {
+      color: var(--danger);
+    }
+
+    .checkbox {
+      position: absolute;
+      top: 52px;
+      right: 18px;
+    }
+
+    .event-title {
+      font-weight: 600;
+      margin: 40px 0 14px;
+      min-height: 20px;
+    }
+
+    .date-label {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .date-field {
+      border: none;
+      background: transparent;
+      font-size: 13px;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 8px;
+    }
+
+    button.manage {
+      margin-top: 14px;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+
+    button.manage:hover {
+      background: #003d57;
+    }
+
+    /* MOBILE RESPONSIVENESS */
+    @media (max-width: 863px) {
+      .nav-links {
+        display: none;
+      }
+
+      .hamburger {
+        display: flex;
+      }
+
+      .navbar {
+        padding: 12px 16px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .logo span {
+        font-size: 18px;
+      }
+      
+      .nav-left {
+        gap: 12px;
+      }
+    }
+  </style>
 </head>
 
-<body class="dashboard-page">
+<body>
 
-    <!-- UNIFIED NAVBAR -->
-    <div class="dashboard-navbar">
-        <div class="nav-left">
-            <div class="nav-logo">
-                <img src="logo.png" alt="TalentYug Logo">
-                TalentYug
-            </div>
-            <div class="nav-links">
-                <a href="Event.html" class="active">My Events</a>
-                <a href="dashboard.html">Dashboard</a>
-                <a href="pre-registration.html">Pre-Registration</a>
-                <a href="qr.html">QR Codes</a>
-                <a href="scanner.html">Scanner</a>
-                <a href="guestlist.html">Guest Lists</a>
-            </div>
+  <div class="navbar">
+    <div class="nav-left">
+      <div class="logo">
+        <img src="logo.png" alt="TalentYug">
+      </div>
+      <div class="nav-links">
+        <a href="Event.html" class="active">My Events</a>
+        <a href="Dashboard.html">Dashboard</a>
+        <a href="qr.html">QR Codes</a>
+        <a href="scanner.html">Scanner</a>
+        <a href="guest.html">Guest Lists</a>
+        <div class="settings">
+          <button class="settings-btn" data-settings-toggle>
+            Settings ▾
+          </button>
+          <div class="settings-menu" id="settingsMenu">
+            <a href="pre-registration.html">Pre-Registration Form</a>
+            <a href="pre-reg-submissions.html">Pre-Reg Submissions</a>
+            <a href="scanner-settings.html">Scanner Settings</a>
+            <a href="settings.html">Event Settings</a>
+          </div>
         </div>
-        <div style="display:flex;align-items:center;gap:12px;">
-            <button class="logout-btn" onclick="logout()">Logout</button>
-        </div>
+      </div>
     </div>
 
-    <!-- CONTENT -->
-    <div class="dashboard-container">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="logout" onclick="logout()">Logout</button>
+      <div class="hamburger" onclick="toggleMenu()" id="hamburger">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
 
-        <div class="page-header">
-            <div>
-                <h1>Your Events</h1>
-                <div class="subtitle">Manage existing events or launch a new one.</div>
-            </div>
-        </div>
+  <!-- MOBILE MENU -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="Event.html" class="active">My Events</a>
+    <a href="Dashboard.html">Dashboard</a>
+    <a href="qr.html">QR Codes</a>
+    <a href="scanner.html">Scanner</a>
+    <a href="guest.html">Guest Lists</a>
+    <div class="settings mobile-settings">
+      <button class="settings-btn" data-settings-toggle>
+        Settings ▾
+      </button>
+      <div class="settings-menu">
+        <a href="pre-registration.html">Pre-Registration Form</a>
+        <a href="pre-reg-submissions.html">Pre-Reg Submissions</a>
+        <a href="scanner-settings.html">Scanner Settings</a>
+        <a href="settings.html">Event Settings</a>
+      </div>
+    </div>
+  </div>
+  </div>
 
-        <div class="dashboard-grid" id="dashboard">
-            <!-- Create Card -->
-            <div class="d-card create-card" onclick="openModal()">
-                <div
-                    style="width:56px; height:56px; background:#f1f5f9; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-bottom:16px;">
-                    <span class="material-icons-round" style="color:var(--primary); font-size:32px;">add</span>
-                </div>
-                <strong style="color:var(--primary); font-size:18px;">Create New Event</strong>
-                <small style="color:var(--muted); margin-top:4px;">Start your next success story</small>
-            </div>
-        </div>
+  <div class="container">
 
+    <div class="controls">
+      <input id="searchInput" placeholder="Search events..." />
+      <select id="sortSelect">
+        <option value="">Sort by</option>
+        <option value="name">Name (A-Z)</option>
+        <option value="start">Start Date</option>
+        <option value="end">End Date</option>
+      </select>
+      <div class="bulk-actions" id="bulkActions">
+        <button onclick="bulkDelete()">Delete</button>
+      </div>
     </div>
 
-    <!-- MODAL -->
-    <div class="modal-overlay" id="modal">
-        <div class="modal-content">
-            <h3 style="margin-bottom:20px; color:var(--text);">Create / Edit Event</h3>
-
-            <label style="font-size:12px; font-weight:600; color:var(--muted); display:block; margin-bottom:4px;">EVENT
-                NAME</label>
-            <input type="text" id="eventName" placeholder="e.g. Annual Tech Symposium">
-
-            <label style="font-size:12px; font-weight:600; color:var(--muted); display:block; margin-bottom:4px;">START
-                DATE</label>
-            <input type="date" id="startDate">
-
-            <label style="font-size:12px; font-weight:600; color:var(--muted); display:block; margin-bottom:4px;">END
-                DATE</label>
-            <input type="date" id="endDate">
-
-            <button class="btn-save" onclick="saveEvent()">Save Event</button>
-            <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-        </div>
+    <div class="filters">
+      <button class="filter-btn active" data-filter="all">All (<span id="count-all">0</span>)</button>
+      <button class="filter-btn" data-filter="active">Active (<span id="count-active">0</span>)</button>
+      <button class="filter-btn" data-filter="closed">Closed (<span id="count-closed">0</span>)</button>
     </div>
+    <div class="dashboard" id="dashboard">
+      <div class="card create-card" onclick="openEventModal()">
+        <div class="plus">+</div><strong>Create New Event</strong>
+      </div>
+    </div>
+  </div>
 
-    <script src="storage.js"></script>
-    <script>
-        const dashboard = document.getElementById("dashboard");
-        const modal = document.getElementById("modal");
-        const eventName = document.getElementById("eventName");
-        const startDate = document.getElementById("startDate");
-        const endDate = document.getElementById("endDate");
-        let editCard = null;
-        let currentEventId = null;
+  <div class="modal" id="eventModal"
+    style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); align-items:center; justify-content:center;">
+    <div style="background:#fff; padding:20px; border-radius:14px; width:90%; max-width:360px;">
+      <h3 style="margin-bottom:12px">Event Name</h3>
+      <input id="modalEventName" placeholder="Event name"
+        style="width:100%;padding:8px;margin-bottom:10px;border-radius:8px;border:1px solid #e3e3e3">
+      <div style="font-size:12px;color:#6b7280;margin-bottom:4px;">Start Date</div>
+      <input type="date" id="modalStartDate"
+        style="width:100%;padding:8px;margin-bottom:10px;border-radius:8px;border:1px solid #e3e3e3">
+      <div style="font-size:12px;color:#6b7280;margin-bottom:4px;">End Date</div>
+      <input type="date" id="modalEndDate"
+        style="width:100%;padding:8px;margin-bottom:14px;border-radius:8px;border:1px solid #e3e3e3">
+      <button onclick="saveEventFromModal()"
+        style="width:100%;padding:10px;border:none;border-radius:10px;background:#005070;color:#fff;font-weight:600">Save
+        Event</button>
+      <button onclick="closeEventModal()"
+        style="margin-top:8px;width:100%;padding:10px;border:none;border-radius:10px;background:#e5e7eb">Cancel</button>
+    </div>
+  </div>
 
-        // Load Events on Init
-        function loadEvents() {
-            const events = Storage.getEvents();
-            // Clear existing except the "Create Card" which is usually static or re-rendered
-            // For simplicity, we re-render everything
-            dashboard.innerHTML = `
-                <div class="d-card create-card" onclick="openModal()">
-                    <div style="width:56px; height:56px; background:#f1f5f9; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-bottom:16px;">
-                        <span class="material-icons-round" style="color:var(--primary); font-size:32px;">add</span>
-                    </div>
-                    <strong style="color:var(--primary); font-size:18px;">Create New Event</strong>
-                    <small style="color:var(--muted); margin-top:4px;">Start your next success story</small>
-                </div>
-            `;
+  <script>
 
-            events.forEach(renderEventCard);
-        }
+    const dashboard = document.getElementById("dashboard");
+    const bulkActions = document.getElementById("bulkActions");
+    const modalEventName = document.getElementById("modalEventName");
+    const modalStartDate = document.getElementById("modalStartDate");
+    const modalEndDate = document.getElementById("modalEndDate");
+    const eventModal = document.getElementById("eventModal");
+    const searchInput = document.getElementById("searchInput");
+    const sortSelect = document.getElementById("sortSelect");
+    const menu = document.getElementById("mobileMenu");
 
-        function renderEventCard(evt) {
-            const dateText = `${new Date(evt.start).toDateString()} → ${new Date(evt.end).toDateString()}`;
-            const card = document.createElement("div");
-            card.className = "d-card";
-            card.dataset.id = evt.id; // Store ID
-            card.dataset.start = evt.start;
-            card.dataset.end = evt.end;
-            card.innerHTML = `
-                <span class="material-icons-round event-menu-btn" onclick="toggleMenu(this)">more_vert</span>
-                <div class="event-dropdown">
-                    <div onclick="editEvent(this)">Edit Event</div>
-                    <div onclick="checkIn('${evt.id}')">Check-In Form</div>
-                    <div onclick="deleteEvent(this)" style="color:var(--danger)">Delete Event</div>
-                </div>
-                
-                <div style="font-size:13px; color:var(--primary); font-weight:600; margin-bottom:8px;" class="event-date">${dateText}</div>
-                <div class="event-title" style="font-size:18px; font-weight:700; margin-bottom:12px; color:var(--text);">${evt.name}</div>
-                
-                <div style="display:flex; gap:12px; margin-top:20px;">
-                    <button class="btn-save" style="flex:1; padding:10px; font-size:14px;" onclick="manageEvent('${evt.id}')">Manage</button>
-                </div>
-            `;
-            dashboard.appendChild(card);
-        }
+    function logout() { localStorage.removeItem("session"); window.location.href = "login.html"; }
+    function toggleMenu() { menu.style.display = menu.style.display === "flex" ? "none" : "flex"; }
+    function closeMenu() { menu.style.display = "none"; }
+    window.addEventListener("resize", () => { if (window.innerWidth > 768) closeMenu(); });
 
-        function openModal(card = null) {
-            editCard = card;
-            if (card) {
-                currentEventId = card.dataset.id;
-                eventName.value = card.querySelector(".event-title").innerText;
-                startDate.value = card.dataset.start;
-                endDate.value = card.dataset.end;
-            } else {
-                currentEventId = null;
-                eventName.value = "";
-                startDate.value = "";
-                endDate.value = "";
-            }
-            modal.style.display = "flex";
-        }
+    function normalizeDate(d) { const x = new Date(d); x.setHours(0, 0, 0, 0); return x; }
+    function getStatus(start, end) { return normalizeDate(new Date()) <= normalizeDate(end) ? "active" : "closed"; }
 
-        function closeModal() {
-            modal.style.display = "none";
-            editCard = null;
-            currentEventId = null;
-        }
+    function saveEventsToStorage() {
+      const events = [...document.querySelectorAll(".dashboard .card:not(.create-card)")].map(c => ({ name: c.dataset.name, start: c.querySelector(".start").value, end: c.querySelector(".end").value }));
+      localStorage.setItem("events", JSON.stringify(events));
+    }
 
-        function saveEvent() {
-            const name = eventName.value.trim();
-            const start = startDate.value;
-            const end = endDate.value;
+    function loadEventsFromStorage() {
+      const events = JSON.parse(localStorage.getItem("events") || "[]");
+      events.forEach(ev => {
+        const card = document.createElement("div");
+        card.className = "card";
+        updateCard(card, ev.name, ev.start, ev.end);
+        dashboard.appendChild(card);
+      });
+      updateAll();
+    }
 
-            if (!name || !start || !end) { alert("Fill all fields"); return; }
-            if (new Date(end) < new Date(start)) { alert("Ending date cannot be before starting date"); return; }
+    function openEventModal() { modalEventName.value = ""; modalStartDate.value = ""; modalEndDate.value = ""; eventModal.style.display = "flex"; }
+    function closeEventModal() { eventModal.style.display = "none"; }
 
-            // Save to Storage
-            Storage.saveEvent({
-                id: currentEventId, // if null, new ID is generated
-                name: name,
-                start: start,
-                end: end
-            });
+    function saveEventFromModal() {
+      const name = modalEventName.value.trim(), start = modalStartDate.value, end = modalEndDate.value;
+      if (!name || !start || !end) { alert("Fill all fields"); return; }
+      const existing = [...document.querySelectorAll(".dashboard .card:not(.create-card)")].map(c => c.dataset.name.toLowerCase());
+      if (existing.includes(name.toLowerCase())) { alert("Event name must be unique"); return; }
+      if (new Date(end) < new Date(start)) { alert("End date cannot be before start date"); return; }
 
-            // Reload UI
-            loadEvents();
+      const card = document.createElement("div"); card.className = "card";
+      updateCard(card, name, start, end); dashboard.appendChild(card);
+      saveEventsToStorage(); closeEventModal(); updateAll();
+    }
 
-            // If new event (no current ID was passed initially), redirect
-            if (!currentEventId) {
-                if (confirm("Event Created! Go to Dashboard?")) {
-                    window.location.href = "dashboard.html";
-                }
-            }
+    function updateCard(card, name, start, end) {
+      card.dataset.name = name;
+      const status = getStatus(start, end);
 
-            closeModal();
-        }
+      card.innerHTML = `
+    
+  <input type="checkbox" class="checkbox" onchange="toggleBulk()" />
+   
+  <span class="badge ${status}">${status === "active" ? "Active" : "Closed"}</span>
+    <div class="actions">
+      <span onclick="enableEdit(this)">Edit</span>
+      <span class="danger" onclick="deleteSingle(this)">Delete</span>
+    </div>
+    <div>
+      
+    <div class="event-title" contenteditable="false">${name}</div>
+      <div class="date-label">Start Date</div>
+      <input type="date" class="date-field start" value="${start}" disabled>
+      <div class="date-label">End Date</div>
+      <input type="date" class="date-field end" value="${end}" disabled>
+    </div>
+    <button class="manage" onclick="window.location.href='Dashboard.html'">Manage Event</button>
+  `;
+      card.querySelectorAll("input[type=date]").forEach(i => { i.onchange = () => { updateAll(); saveEventsToStorage(); }; });
+    }
 
-        function toggleMenu(el) {
-            document.querySelectorAll(".event-dropdown").forEach(d => {
-                if (d !== el.nextElementSibling) d.style.display = "none";
-            });
-            const db = el.nextElementSibling;
-            db.style.display = db.style.display === "block" ? "none" : "block";
-            event.stopPropagation();
-        }
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 900) {
+        document.getElementById("mobileMenu").style.display = "none";
+      }
+    });
 
-        function editEvent(el) {
-            openModal(el.closest(".d-card"));
-        }
+    function toggleSettings() {
+      const m = document.getElementById("settingsMenu");
+      m.style.display = m.style.display === "block" ? "none" : "block";
+    }
 
-        function deleteEvent(el) {
-            if (confirm("Delete this event?")) {
-                const card = el.closest(".d-card");
-                Storage.deleteEvent(card.dataset.id); // Delete from storage
-                card.remove();
-            }
-        }
+    window.addEventListener("click", e => {
+      if (!e.target.closest(".settings")) {
+        const m = document.getElementById("settingsMenu");
+        if (m) m.style.display = "none";
+      }
+    });
+    /* ===== SETTINGS DROPDOWN (WORKS EVERYWHERE) ===== */
+    document.querySelectorAll("[data-settings-toggle]").forEach(btn => {
+      btn.addEventListener("click", function (e) {
+        e.stopPropagation();
 
-        function checkIn(id) {
-            alert("Opening Check-In for Event ID: " + id);
-        }
+        const menu = this.nextElementSibling;
 
-        function manageEvent(id) {
-            window.location.href = "dashboard.html";
-        }
+        // close others
+        document.querySelectorAll(".settings-menu").forEach(m => {
+          if (m !== menu) m.style.display = "none";
+        });
 
-        function logout() {
-            window.location.href = "login.html";
-        }
+        menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+      });
+    });
 
-        function toggleTheme() {
-            const current = Storage.getTheme();
-            const next = current === 'dark' ? 'light' : 'dark';
-            Storage.setTheme(next);
-            updateThemeIcon(next);
-        }
+    document.addEventListener("click", () => {
+      document.querySelectorAll(".settings-menu").forEach(m => {
+        m.style.display = "none";
+      });
+    });
 
-        function updateThemeIcon(theme) {
-            const icon = document.querySelector('.theme-icon');
-            if (icon) icon.innerText = theme === 'dark' ? 'light_mode' : 'dark_mode';
-        }
+    /* FILTER/SEARCH/SORT/BULK DELETE/EDIT FUNCTIONS */
+    function updateAll() { updateStatuses(); applyFilter(document.querySelector(".filter-btn.active").dataset.filter); updateCounts(); applySearch(); applySort(); saveEventsToStorage(); }
+    function updateStatuses() { document.querySelectorAll(".dashboard .card:not(.create-card)").forEach(card => { const s = card.querySelector(".start").value; const e = card.querySelector(".end").value; const status = getStatus(s, e); const badge = card.querySelector(".badge"); badge.className = `badge ${status}`; badge.textContent = status === "active" ? "Active" : "Closed"; }); }
+    function updateCounts() { const cards = [...document.querySelectorAll(".dashboard .card:not(.create-card)")]; document.getElementById("count-all").textContent = cards.length; document.getElementById("count-active").textContent = cards.filter(c => c.querySelector(".badge").classList.contains("active")).length; document.getElementById("count-closed").textContent = cards.filter(c => c.querySelector(".badge").classList.contains("closed")).length; }
+    document.querySelectorAll(".filter-btn").forEach(b => { b.onclick = () => { document.querySelectorAll(".filter-btn").forEach(x => x.classList.remove("active")); b.classList.add("active"); applyFilter(b.dataset.filter); }; });
+    function applyFilter(f) { document.querySelectorAll(".dashboard .card:not(.create-card)").forEach(c => { const s = c.querySelector(".badge").classList.contains("active") ? "active" : "closed"; c.style.display = (f === "all" || f === s) ? "flex" : "none"; }); }
+    function applySearch() { const q = searchInput.value.toLowerCase(); document.querySelectorAll(".dashboard .card:not(.create-card)").forEach(c => { if (c.style.display === "none") return; const matches = c.dataset.name.toLowerCase().includes(q); c.style.display = matches ? "flex" : "none"; }); }
+    searchInput.addEventListener("input", updateAll);
+    function applySort() { const mode = sortSelect.value; const cards = [...document.querySelectorAll(".dashboard .card:not(.create-card)")]; cards.sort((a, b) => { if (mode === "name") return a.dataset.name.localeCompare(b.dataset.name); if (mode === "start") return a.querySelector(".start").value.localeCompare(b.querySelector(".start").value); if (mode === "end") return a.querySelector(".end").value.localeCompare(b.querySelector(".end").value); return 0; }); cards.forEach(c => dashboard.appendChild(c)); }
+    sortSelect.onchange = applySort;
+    function toggleBulk() { bulkActions.style.display = [...document.querySelectorAll(".checkbox:checked")].length ? "flex" : "none"; }
+    function deleteSingle(el) { if (confirm("Delete this event?")) { el.closest(".card").remove(); updateAll(); saveEventsToStorage(); } }
+    function bulkDelete() { if (confirm("Delete selected events?")) { document.querySelectorAll(".checkbox:checked").forEach(c => c.closest(".card").remove()); bulkActions.style.display = "none"; updateAll(); saveEventsToStorage(); } }
+    function enableEdit(el) { const card = el.closest(".card"); if (card.querySelector(".badge").classList.contains("closed")) { alert("Closed events cannot be edited"); return; } card.querySelectorAll("input[type=date]").forEach(i => i.disabled = false); card.querySelector(".event-title").contentEditable = true; el.textContent = "Save"; el.onclick = () => saveEdit(card, el); }
+    function saveEdit(card, btn) { const nameEl = card.querySelector(".event-title"); const start = card.querySelector(".start").value; const end = card.querySelector(".end").value; const name = nameEl.textContent.trim(); if (!name) { alert("Event name cannot be empty"); return; } const names = [...document.querySelectorAll(".dashboard .card:not(.create-card)")].filter(c => c !== card).map(c => c.dataset.name.toLowerCase()); if (names.includes(name.toLowerCase())) { alert("Event name must be unique"); return; } if (new Date(end) < new Date(start)) { alert("End date cannot be before start date"); return; } card.dataset.name = name; nameEl.contentEditable = false; card.querySelectorAll("input[type=date]").forEach(i => i.disabled = true); updateAll(); saveEventsToStorage(); btn.textContent = "Edit"; btn.onclick = () => enableEdit(btn); }
 
-        // Init
-        window.onload = function () {
-            loadEvents();
-            updateThemeIcon(Storage.getTheme());
-        };
-    </script>
+    /* INITIAL LOAD */
+    loadEventsFromStorage();
+    setInterval(updateAll, 60 * 1000);
+  </script>
+
 </body>
 
 </html>

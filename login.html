@@ -2,147 +2,39 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log In – TalentYug</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            background: #f1f5f9;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-        }
-
-        .auth-card {
-            background: white;
-            padding: 40px;
-            border-radius: 24px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        .auth-logo {
-            margin-bottom: 24px;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 700;
-            color: var(--primary);
-            font-size: 24px;
-        }
-
-        .auth-logo img {
-            width: 40px;
-        }
-
-        .input-group {
-            text-align: left;
-            margin-bottom: 16px;
-        }
-
-        .input-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--muted);
-            margin-bottom: 6px;
-        }
-
-        .input-field {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 15px;
-            outline: none;
-        }
-
-        .input-field:focus {
-            border-color: var(--primary);
-        }
-
-        .btn-auth {
-            width: 100%;
-            padding: 14px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 12px;
-            margin-bottom: 24px;
-            transition: 0.2s;
-        }
-
-        .btn-auth:hover {
-            background: #003d56;
-        }
-
-        .auth-footer {
-            font-size: 14px;
-            color: var(--muted);
-        }
-
-        .auth-footer a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 600;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - TalentYug</title>
+  <link rel="stylesheet" href="auth.css">
+  <script src="auth.js"></script>
 </head>
 
 <body>
+  <div class="auth-box">
+    <h2>Welcome to TalentYug</h2>
 
-    <div class="auth-card">
-        <div class="auth-logo">
-            <img src="logo.png" alt="Logo"> TalentYug
-        </div>
+    <form onsubmit="event.preventDefault(); login();">
+      <input id="email" type="email" placeholder="Email address" autocomplete="email" required>
+      <input id="password" type="password" placeholder="Password" autocomplete="current-password" required>
 
-        <h2 style="margin:0 0 8px;">Welcome Back</h2>
-        <p style="color:var(--muted); margin:0 0 32px; font-size:15px;">Enter your credentials to access your dashboard.
-        </p>
+      <button type="submit">Login</button>
+    </form>
 
-        <form onsubmit="handleLogin(event)">
-            <div class="input-group">
-                <label>Email Address</label>
-                <input type="email" class="input-field" placeholder="john@example.com" required>
-            </div>
+    <div class="divider"><span>Or continue with</span></div>
 
-            <div class="input-group">
-                <label>Password</label>
-                <input type="password" class="input-field" placeholder="••••••••" required>
-            </div>
-
-            <button type="submit" class="btn-auth">Log In</button>
-        </form>
-
-        <div class="auth-footer">
-            New to TalentYug? <a href="signup.html">Create Account</a>
-        </div>
+    <div class="social-login">
+      <!-- Google Button -->
+      <button type="button" class="social-btn" onclick="loginWithGoogle()">
+        <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google">
+        Google
+      </button>
     </div>
 
-    <script>
-        function handleLogin(e) {
-            e.preventDefault();
-            // Simulate API call
-            const btn = e.target.querySelector('button');
-            btn.innerText = "Authenticating...";
-
-            setTimeout(() => {
-                // Redirect to Dashboard as per user request
-                window.location.href = "dashboard.html";
-            }, 1000);
-        }
-    </script>
-
+    <p>
+      <a href="forgot.html">Forgot password?</a><br><br>
+      New here? <a href="register.html">Create an account</a>
+    </p>
+  </div>
 </body>
 
 </html>
